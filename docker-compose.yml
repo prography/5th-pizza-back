@@ -1,0 +1,36 @@
+version: '3.7'
+services:
+  db:
+    image: mysql:5
+    ports:
+      - "3001:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "admin#1234"
+      MYSQL_DATABASE: "pizza"
+      MYSQL_USER: "admin"
+      MYSQL_PASSWORD: "admin#1234"
+    restart: on-failure
+    volumes:
+     - ./db/conf.d:/etc/mysql/conf.d
+     - ./db/data:/var/lib/mysql
+    networks:
+      pizzanet:
+        ipv4_address: 172.16.25.2
+  server:
+    build: .
+    ports:
+      - "3000:4000"
+    volumes:
+      - ".:/pizza/web"
+    depends_on: 
+      - db
+    command: "npm run dev"
+    networks:
+      pizzanet:
+        ipv4_address: 172.16.25.3
+networks:
+  pizzanet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.25.0/24
