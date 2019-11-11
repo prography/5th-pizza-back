@@ -5,8 +5,8 @@ const challenge = require('./challenge');
 const record =  require('./record');
 
 
-// router.use('/challenges', challenge);
-// router.use('records', record);
+router.use('/challenges', challenge);
+router.use('/records', record);
 
 router.get('/', function(req, res){
     res.send({message: 'TEST'});
