@@ -24,7 +24,7 @@ const createChallenge = function(req, res){
     
     try{
         models.Challenges.create(challenge)
-        .then(result => res.send({ code:200 }))
+        .then(result => res.send({ code:200, message: 'success' }))
     }
     catch(err){
         console.log(err)
@@ -34,7 +34,7 @@ const createChallenge = function(req, res){
 const deleteChallenge = function(req, res){
     const id = req.params.challenge
     models.Challenges.destroy({where: {id: id}})
-    .then(result => res.send({code: 200}))
+    .then(result => res.send({code: 200, message: 'success'}))
 }
 
 
