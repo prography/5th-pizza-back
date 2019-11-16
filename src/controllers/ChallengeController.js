@@ -10,9 +10,14 @@ const getChallenges = async function(req ,res){
 }
 
 const getChallenge = async function(req, res){
-    const id = req.params.challenges;
+    const id = req.params.challenge;
     const challenge = await models.Challenges.findOne({where: {id: id}});
-    res.send( {data: challenge} );
+    if (challenge) {
+        res.send({ data: challenge });
+    }
+    else {
+        throw new Error('challenge does not exist')
+    }
 }
 
 const createChallenge = async function(req, res){
@@ -40,9 +45,7 @@ const createChallenge = async function(req, res){
         }
         else {
             const result = await models.Challenges.create(challenge)
-            res.send({
-                data: result
-            })
+            res.send({ data: result })
         }
     }
     catch (err) {
@@ -53,11 +56,14 @@ const createChallenge = async function(req, res){
 
 const deleteChallenge = async function(req, res){
     const id = req.params.challenge
-    const result = await models.Challenges.destroy({where: {id: id}})
+    const result = await models.Challenges.destroy({ where: {id: id} })
     if (result) {
-        res.send({data: result})
+        res.send({ data: result })
     }
-    else throw new Error('Cannot delete challenge')
+    
+    else {
+        throw new Error('Cannot delete challenge')
+    }
 }
 
 
