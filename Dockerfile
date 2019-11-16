@@ -6,7 +6,7 @@ ENV HOST 0.0.0.0
 ARG PROJECT_DIR=/pizza/web
 
 COPY package.json ${PROJECT_DIR}/package.json
-COPY package-lock.json ${PROJECT_DIR}}/package-lock.json
+COPY package-lock.json ${PROJECT_DIR}/package-lock.json
 WORKDIR ${PROJECT_DIR}
 RUN npm install
 

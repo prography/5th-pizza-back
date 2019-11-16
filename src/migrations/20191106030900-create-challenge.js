@@ -21,7 +21,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DOUBLE
       },
-      createdAt: {
+      exercise_type: {
+        allowNull: false,
+        type: Sequelize.ENUM('running', 'cycling')
+      },
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       }

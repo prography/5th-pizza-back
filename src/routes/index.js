@@ -2,7 +2,7 @@ const { Router } = require('express');
 const router = Router();
 const models = require('../models');         
 const challenge = require('./challenge');
-const record =  require('./record');
+//const record =  require('./record');
 
 
 router.use('/challenges', challenge);
