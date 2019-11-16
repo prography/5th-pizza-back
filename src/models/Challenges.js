@@ -4,9 +4,8 @@ module.exports = (sequelize, DataTypes) => {
     routine_type: DataTypes.ENUM('daily','weekly','monthly'),
     object_unit: DataTypes.ENUM('distance','time'),
     quota: DataTypes.DOUBLE,
-    exercise_type: DataTypes.ENUM('running', 'cycling')
-  }, {
-      timestamp: true
+    exercise_type: DataTypes.ENUM('running', 'cycling'),
+    created_at: DataTypes.DATE
   });
   
   challenges.associate = function(models) {

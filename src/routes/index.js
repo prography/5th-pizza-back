@@ -8,7 +8,7 @@ router.use('/challenges', challenge);
 router.use('/records', record);
 
 router.get('/', function(req, res){
-    res.send({message: 'TEST'});
+    res.send( {message: 'TEST'} );
 })
 
 module.exports = router;

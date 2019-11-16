@@ -27,7 +27,7 @@ const createChallenge = async function(req, res){
         object_unit: body.object_unit,
         quota: body.quota,
         exercise_type: body.exercise_type,
-        create_at: moment().format('YYYY-MM-dd')
+        create_at: moment().format('YYYY-MM-DD')
     }
     
     try{
@@ -65,7 +65,6 @@ const deleteChallenge = async function(req, res){
         throw new Error('Cannot delete challenge')
     }
 }
-
 
 module.exports = {
     getChallenges,
