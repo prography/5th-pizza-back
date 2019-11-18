@@ -11,7 +11,7 @@ module.exports = {
       },
       running_type: {
         allowNull: false,
-        type: Sequelize.TIME
+        type: Sequelize.DOUBLE
       },
       distance:{
         allowNull: false,

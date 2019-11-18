@@ -27,7 +27,7 @@ const createRecord = async function(req, res){
         created_at: moment().format('YYYY-MM-DD')
     }
     const result = await models.Records.create(record)
-    if (result){
+    if (result) {
         res.send({ data: result });
     } 
         
