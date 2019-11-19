@@ -29,6 +29,8 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 db.Challenges = require('./Challenges')(sequelize, Sequelize);
 db.Records = require('./Records')(sequelize, Sequelize);
+// db.Users = require('./Users')(sequelize, Sequelize);
+// db.UserLog = require('./UserLog')(sequelize, Sequelize);
 
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
