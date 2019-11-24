@@ -9,7 +9,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      running_type: {
+      running_time: {
         allowNull: false,
         type: Sequelize.DOUBLE
       },
