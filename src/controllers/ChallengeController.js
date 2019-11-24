@@ -27,9 +27,11 @@ const createChallenge = async function(req, res){
         object_unit: body.object_unit,
         quota: body.quota,
         exercise_type: body.exercise_type,
-        create_at: moment().format('YYYY-MM-DD')
+        created_at: moment()
     }
     
+    
+
     try{
         const isExist = await models.Challenges.findOne({ where: 
             { [Op.and]: [ 
