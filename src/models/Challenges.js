@@ -6,6 +6,9 @@ module.exports = (sequelize, DataTypes) => {
     quota: DataTypes.DOUBLE,
     exercise_type: DataTypes.ENUM('running', 'cycling'),
     created_at: DataTypes.DATE
+  },
+  {
+    timestamps: false
   });
   
   challenges.associate = function(models) {
