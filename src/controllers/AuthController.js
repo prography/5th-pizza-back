@@ -5,27 +5,27 @@ const secretObj = require("../config/key");
 const axios = require('axios')
 
 const login = async function(req, res){
-    const access_token = req.body.access_token
+    const access_token = req.headers['x-kakao-token']
+    console.log(access_token)
     
     if (access_token) {
         const userInfo = getUserInfo(access_token)
         const isExist = await models.Users.findOne({ where: { user_id: userInfo.id } })
-        console.log(isExist)
+        
         if (isExist) {
             const token = jwt.sign( { user_id: userInfo.id }, secretObj )
             
             const loginLog = {
-                user_no: result.id,
+                user_no: userInfo.id,
                 log_in: moment()
             }
            
             const log = await models.UserLog.create(loginLog)
             if (!log) {
                 throw new Error('Cannot create log')
-            } 
-
+            }
+            
             res.cookie({ user_id: userInfo.id }, token)
-            res.send({ data: result })
 
         }
         else {
