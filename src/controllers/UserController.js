@@ -7,23 +7,17 @@ const createUser = async function(req, res){
     const body = req.body
     const user = {
         user_id: body.user_id,
-        password: body.user_pw,
+        email: body.email,
+        nickname: body.nickname,
         created_at: moment()
     }
 
-    const isExist = await models.Users.findOne({ where: { user_id: user.user_id  } })
-    if (isExist) {
-        throw new Error('duplicate user')
-    }
-    else {
-        const result = await models.Users.create(user)
-        res.send({ data: result })
-    }
+    const result = await models.Users.create(user)
+    res.send({ data: result })
 }
 
-const deleteUser = function(req, res){
-    const id = req.params.user
-    const result = await models.Users.destroy({ where: {id: id} })
+const deleteUser = async function(req, res){
+    const result = await models.Users.destroy({ where: { user_id: req.params.user_id } })
     if (result) {
         res.send({ data: result })
     }
@@ -36,6 +30,5 @@ const deleteUser = function(req, res){
 
 module.exports = {
     createUser,
-    updateUser,
     deleteUser
 }
