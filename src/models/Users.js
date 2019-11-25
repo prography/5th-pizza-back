@@ -1,8 +1,9 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const users = sequelize.define('Users', {
-    user_id: DataTypes.STRING,
-    password: DataTypes.STRING,
+    user_id: DataTypes.INTEGER,
+    email: DataTypes.STRING,
+    nickname: DataTypes.STRING,
     created_at: DataTypes.DATE
   }, {
     timestamps: false
