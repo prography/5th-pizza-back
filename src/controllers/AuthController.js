@@ -34,7 +34,14 @@ const login = async function(req, res){
                 email: userInfo.kakao_account.email,
                 nickname: userInfo.properties.nickname
             }
-            axios.post('/users', user)
+            const result = await models.Users.create(user)
+            
+            if (result) {
+                res.send({ data: result })
+            }
+            else {
+                throw new Error('Cannot create user')
+            }
         }
     }
 
@@ -56,7 +63,7 @@ const getUserInfo = async function(access_token) {
             Authorization: `Bearer ${access_token}`
         }
     });
-    return userInfo
+    return userInfo.data
 }
 
 module.exports = {
