@@ -9,7 +9,7 @@ router.use('/records', record);
 //router.use('/user', user);
 
 router.get('/', function(req, res){
-    res.send( {message: 'TEST'} );
+    res.send( { message: 'TEST' } );
 })
 
 module.exports = router;
