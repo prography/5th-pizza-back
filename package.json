@@ -21,6 +21,7 @@
   "homepage": "https://github.com/prography/5th-pizza-back#readme",
   "dependencies": {
     "@sentry/node": "^5.9.0",
+    "axios": "^0.19.0",
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -29,7 +30,6 @@
     "multer": "^1.4.2",
     "mysql": "^2.17.1",
     "mysql2": "^2.0.0",
-    "request": "^2.88.0",
     "sequelize": "^5.21.2",
     "sequelize-cli": "^5.5.1",
     "sequelize-constants": "^1.0.0"
