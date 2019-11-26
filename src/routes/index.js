@@ -4,6 +4,9 @@ const challenge = require('./challenge');
 const record =  require('./record');
 const user = require('./user');
 const auth = require('./auth');
+const authUtil = require('../middlewares/AuthHelper');
+
+router.use(authUtil.verifyToken);
 
 router.use('/challenges', challenge);
 router.use('/records', record);

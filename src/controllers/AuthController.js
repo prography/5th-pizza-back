@@ -46,24 +46,8 @@ const login = async function(req, res){
 
 
 const logout = function(req, res) {
-    
-}
-
-const verifyToken = async function(req, res){
     const token = req.headers['x-access-token']
-    if (!token) {
-        res.status(403).send({ error: 'not logged in' })
-    }
-
-    const decoded = jwt.verify(token , secretObj)
-    const user = decoded.user_id
-    const isExist = await models.Users.findOne({ where: {user_id: user} })
-    if (isExist) {
-        res.send({ data: isExist , access_token: token })
-    }
-    else {
-        throw new Error('Cannot find user')
-    }
+    
 }
 
 const getUserInfo = async function(access_token) {
@@ -79,6 +63,5 @@ const getUserInfo = async function(access_token) {
 
 module.exports = {
     login,
-    logout,
-    verifyToken
+    logout
 }
