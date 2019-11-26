@@ -11,7 +11,7 @@ const login = async function(req, res){
     if (access_token) {
         const userInfo = getUserInfo(access_token)
         const isExist = await models.Users.findOne({ where: { user_id: userInfo.id } })
-        const token = jwt.sign( { user_id: userInfo.id }, secretObj )
+        const token = jwt.sign( { user_id: userInfo.id }, secretObj , { expiresIn: '7d' })
 
         if (isExist) {
             
@@ -24,7 +24,6 @@ const login = async function(req, res){
             if (!log) {
                 throw new Error('Cannot create log')
             }
-
             res.send( { data: isExist, access_token: token } )
         }
         else {
@@ -35,7 +34,7 @@ const login = async function(req, res){
             }
             const result = await models.Users.create(user)
             
-            if (result) {
+            if (result) {    
                 res.send({ data: result, access_token: token })
             }
             else {
@@ -55,6 +54,17 @@ const logout = function(req, res) {
     
 }
 
+const verifyToken = function(req, res){
+    const token = req.headers['x-access-token']
+    if (!token) {
+        res.status(403).send({ error: 'not logged in' })
+    }
+
+    const decoded = jwt.verify(token , secretObj)
+
+
+}
+
 const getUserInfo = async function(access_token) {
    const userInfo = await axios.get('https://kapi.kakao.com/v2/user/me', 
     {
@@ -68,5 +78,6 @@ const getUserInfo = async function(access_token) {
 
 module.exports = {
     login,
-    logout
+    logout,
+    verifyToken
 }
