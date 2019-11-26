@@ -9,6 +9,10 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      user_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      },
       routine_type: {
         allowNull: false,
         type: Sequelize.ENUM('daily','weekly','monthly')
