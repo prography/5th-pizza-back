@@ -12,7 +12,7 @@ const verifyToken = async function(req, res, next ){
         const user = decoded.user_id
         const isExist = await models.Users.findOne({ where: {user_id: user} })
         if (isExist) {
-            req.user(user)
+            req.user = user
             next();
         }
         else {
