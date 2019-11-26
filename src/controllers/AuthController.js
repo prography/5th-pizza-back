@@ -11,9 +11,9 @@ const login = async function(req, res){
     if (access_token) {
         const userInfo = getUserInfo(access_token)
         const isExist = await models.Users.findOne({ where: { user_id: userInfo.id } })
-        
+        const token = jwt.sign( { user_id: userInfo.id }, secretObj )
+
         if (isExist) {
-            const token = jwt.sign( { user_id: userInfo.id }, secretObj )
             
             const loginLog = {
                 user_no: userInfo.id,
@@ -24,9 +24,8 @@ const login = async function(req, res){
             if (!log) {
                 throw new Error('Cannot create log')
             }
-            
-            res.cookie({ user_id: userInfo.id }, token)
 
+            res.send( { data: isExist, access_token: token } )
         }
         else {
             const user = {
@@ -37,7 +36,7 @@ const login = async function(req, res){
             const result = await models.Users.create(user)
             
             if (result) {
-                res.send({ data: result })
+                res.send({ data: result, access_token: token })
             }
             else {
                 throw new Error('Cannot create user')
@@ -46,7 +45,7 @@ const login = async function(req, res){
     }
 
     else {
-        throw new Error('kakao access token error')
+        throw new Error('kakao-token error')
     }
     
 }
@@ -63,6 +62,7 @@ const getUserInfo = async function(access_token) {
             Authorization: `Bearer ${access_token}`
         }
     });
+
     return userInfo.data
 }
 
