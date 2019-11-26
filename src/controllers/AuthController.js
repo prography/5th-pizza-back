@@ -1,7 +1,6 @@
 const models = require('../models')
 const moment = require('moment')
 const jwt = require('jsonwebtoken')
-const secretObj = require("../config/key");
 const axios = require('axios')
 
 const login = async function(req, res){
@@ -11,7 +10,7 @@ const login = async function(req, res){
     if (access_token) {
         const userInfo = getUserInfo(access_token)
         const isExist = await models.Users.findOne({ where: { user_id: userInfo.id } })
-        const token = jwt.sign( { user_id: userInfo.id }, secretObj , { expiresIn: '7d' })
+        const token = jwt.sign( { user_id: userInfo.id }, process.env.PASSWORD_SECRET , { expiresIn: '7d' })
 
         if (isExist) {
             const loginLog = {

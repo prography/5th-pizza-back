@@ -23,18 +23,18 @@ const getChallenge = async function(req, res){
 const createChallenge = async function(req, res){
     const body = req.body
     const challenge = {
+        user_id: req.user,
         routine_type: body.routine_type,
         object_unit: body.object_unit,
         quota: body.quota,
         exercise_type: body.exercise_type,
         created_at: moment()
     }
-    
-    
 
     try{
         const isExist = await models.Challenges.findOne({ where: 
-            { [Op.and]: [ 
+            { [Op.and]: [
+                { user_id: challenge.user_id },
                 { routine_type: challenge.routine_type },
                 { object_unit: challenge.object_unit },
                 { quota: challenge.quota }, 
