@@ -11,7 +11,7 @@ const login = async function(req, res){
         const userInfo = await getUserInfo(access_token)
         console.log(userInfo.properties.nickname)
         const isExist = await models.Users.findOne({ where: { user_id: userInfo.id } })
-        const token = jwt.sign( { user_id: userInfo.id }, process.env.PASSWORD_SECRET , { expiresIn: '7d' })
+        const token = jwt.sign( { user: userInfo.id }, process.env.PASSWORD_SECRET , { expiresIn: '7d' })
 
         if (isExist) { res.send( { data: isExist, access_token: token } ) }
         else {
