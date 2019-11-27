@@ -10,10 +10,10 @@ router.get('/', function(req, res){
     res.send( { message: 'TEST' } );
 })
 
+router.use('/auth', auth);
 router.use(authUtil.verifyToken);
 router.use('/challenges', challenge);
 router.use('/records', record);
 router.use('/user', user);
-router.use('/auth', auth);
 
 module.exports = router;
