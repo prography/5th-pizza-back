@@ -6,7 +6,7 @@ const Op = sequelize.Op;
 
 const getChallenges = async function(req ,res){
     const challenges = await models.Challenges.findAll();
-    res.send( {data: challenges} );
+    res.send({ data: challenges });
 }
 
 const getChallenge = async function(req, res){
@@ -23,7 +23,7 @@ const getChallenge = async function(req, res){
 const createChallenge = async function(req, res){
     const body = req.body
     const challenge = {
-        user_id: req.user,
+        user_id: req.user.user_id,
         routine_type: body.routine_type,
         object_unit: body.object_unit,
         quota: body.quota,
