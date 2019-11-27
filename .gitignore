@@ -10,3 +10,4 @@ node_modules/
 Dockerrun.aws.json
 
 src/config
+db/
