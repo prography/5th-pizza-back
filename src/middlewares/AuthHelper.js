@@ -9,9 +9,9 @@ const verifyToken = async function(req, res, next ){
 
     else {
         const decoded = jwt.verify(token , process.env.PASSWORD_SECRET)
-        const user = decoded.user_id
-        const isExist = await models.Users.findOne({ where: {user_id: user} })
-        if (isExist) {
+        const user_id = decoded.user_id
+        const user  = await models.Users.findOne({ where: {user_id: user_id} })
+        if (user) {
             req.user = user
             next();
         }
