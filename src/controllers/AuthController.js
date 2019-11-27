@@ -4,34 +4,25 @@ const jwt = require('jsonwebtoken')
 const axios = require('axios')
 
 const login = async function(req, res){
-    const access_token = req.headers['x-kakao-token']
+    const access_token = req.body.x_kakao_token
     console.log(access_token)
     
     if (access_token) {
-        const userInfo = getUserInfo(access_token)
+        const userInfo = await getUserInfo(access_token)
+        console.log(userInfo.properties.nickname)
         const isExist = await models.Users.findOne({ where: { user_id: userInfo.id } })
         const token = jwt.sign( { user_id: userInfo.id }, process.env.PASSWORD_SECRET , { expiresIn: '7d' })
 
-        if (isExist) {
-            const loginLog = {
-                user_no: userInfo.id,
-                log_in: moment()
-            }
-           
-            const log = await models.UserLog.create(loginLog)
-            if (!log) {
-                throw new Error('Cannot create log')
-            }
-            res.send( { data: isExist, access_token: token } )
-        }
+        if (isExist) { res.send( { data: isExist, access_token: token } ) }
         else {
             const user = {
                 user_id: userInfo.id,
                 email: userInfo.kakao_account.email,
-                nickname: userInfo.properties.nickname
+                nickname: userInfo.properties.nickname,
+                create_at: moment()
             }
             const result = await models.Users.create(user)
-            
+
             if (result) { res.send({ data: result, access_token: token }) }
             else { throw new Error('Cannot create user') }
         }
@@ -43,12 +34,6 @@ const login = async function(req, res){
     
 }
 
-
-const logout = function(req, res) {
-    const token = req.headers['x-access-token']
-    
-}
-
 const getUserInfo = async function(access_token) {
    const userInfo = await axios.get('https://kapi.kakao.com/v2/user/me', 
     {
@@ -56,11 +41,9 @@ const getUserInfo = async function(access_token) {
             Authorization: `Bearer ${access_token}`
         }
     });
-
     return userInfo.data
 }
 
 module.exports = {
-    login,
-    logout
+    login
 }

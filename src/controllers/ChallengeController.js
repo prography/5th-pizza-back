@@ -32,23 +32,23 @@ const createChallenge = async function(req, res){
     }
 
     try{
-        const isExist = await models.Challenges.findOne({ where: 
-            { [Op.and]: [
-                { user_id: challenge.user_id },
-                { routine_type: challenge.routine_type },
-                { object_unit: challenge.object_unit },
-                { quota: challenge.quota }, 
-                { exercise_type: challenge.exercise_type }
-            ] }
-        })
+        // const isExist = await models.Challenges.findOne({ where: 
+        //     { [Op.and]: [
+        //         { user_id: challenge.user_id },
+        //         { routine_type: challenge.routine_type },
+        //         { object_unit: challenge.object_unit },
+        //         { quota: challenge.quota }, 
+        //         { exercise_type: challenge.exercise_type }
+        //     ] }
+        // })
         
-        if (isExist) {
-            throw new Error('duplicate challenge')
-        }
-        else {
+        // if (isExist) {
+        //     throw new Error('duplicate challenge')
+        // }
+        // else {
             const result = await models.Challenges.create(challenge)
             res.send({ data: result })
-        }
+        //}
     }
     catch (err) {
         console.log(err)
