@@ -5,13 +5,14 @@ const Op = sequelize.Op;
 
 
 const getChallenges = async function(req ,res){
-    const challenges = await models.Challenges.findAll();
+    const user = req.user.user_id
+    const challenges = await models.Challenges.findAll({ where: { user_id: user.user_id }, order: ['id', 'DESC'] });
     res.send({ data: challenges });
 }
 
 const getChallenge = async function(req, res){
     const id = req.params.challenge;
-    const challenge = await models.Challenges.findOne({where: {id: id}});
+    const challenge = await models.Challenges.findOne({ where: { id: id } });
     if (challenge) {
         res.send({ data: challenge });
     }
@@ -22,6 +23,7 @@ const getChallenge = async function(req, res){
 
 const createChallenge = async function(req, res){
     const body = req.body
+
     const challenge = {
         user_id: req.user.user_id,
         routine_type: body.routine_type,
@@ -32,26 +34,10 @@ const createChallenge = async function(req, res){
     }
 
     try{
-        // const isExist = await models.Challenges.findOne({ where: 
-        //     { [Op.and]: [
-        //         { user_id: challenge.user_id },
-        //         { routine_type: challenge.routine_type },
-        //         { object_unit: challenge.object_unit },
-        //         { quota: challenge.quota }, 
-        //         { exercise_type: challenge.exercise_type }
-        //     ] }
-        // })
-        
-        // if (isExist) {
-        //     throw new Error('duplicate challenge')
-        // }
-        // else {
-            const result = await models.Challenges.create(challenge)
-            res.send({ data: result })
-        //}
+        const result = await models.Challenges.create(challenge)
+        res.send({ data: result })
     }
     catch (err) {
-        console.log(err)
         throw new Error('Cannot create challenge')
     }
 }
