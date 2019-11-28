@@ -5,11 +5,9 @@ const axios = require('axios')
 
 const login = async function(req, res){
     const access_token = req.body.x_kakao_token
-    console.log(access_token)
-    
+
     if (access_token) {
         const userInfo = await getUserInfo(access_token)
-        console.log(userInfo.properties.nickname)
         const isExist = await models.Users.findOne({ where: { user_id: userInfo.id } })
         const token = jwt.sign( { user: userInfo.id }, process.env.PASSWORD_SECRET , { expiresIn: '7d' })
 
@@ -21,6 +19,7 @@ const login = async function(req, res){
                 nickname: userInfo.properties.nickname,
                 create_at: moment()
             }
+            
             const result = await models.Users.create(user)
 
             if (result) { res.send({ data: result, access_token: token }) }
