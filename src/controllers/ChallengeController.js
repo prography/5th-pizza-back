@@ -5,8 +5,7 @@ const Op = sequelize.Op;
 
 
 const getChallenges = async function(req ,res){
-    const user = req.user.user_id
-    const challenges = await models.Challenges.findAll({ where: { user_id: user.user_id }, order: ['id', 'DESC'] });
+    const challenges = await models.Challenges.findAll({ where: { user_id: req.user.user_id }, order: [['id', 'DESC']] });
     res.send({ data: challenges });
 }
 
