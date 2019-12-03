@@ -23,7 +23,6 @@ const getChallenge = async function(req, res){
 const createChallenge = async function(req, res){
     const body = req.body
     const challenge = {
-        user_id: req.user,
         routine_type: body.routine_type,
         object_unit: body.object_unit,
         quota: body.quota,
@@ -31,29 +30,9 @@ const createChallenge = async function(req, res){
         created_at: moment()
     }
 
-    try{
-        // const isExist = await models.Challenges.findOne({ where: 
-        //     { [Op.and]: [
-        //         { user_id: challenge.user_id },
-        //         { routine_type: challenge.routine_type },
-        //         { object_unit: challenge.object_unit },
-        //         { quota: challenge.quota }, 
-        //         { exercise_type: challenge.exercise_type }
-        //     ] }
-        // })
-        
-        // if (isExist) {
-        //     throw new Error('duplicate challenge')
-        // }
-        // else {
-            const result = await models.Challenges.create(challenge)
-            res.send({ data: result })
-        //}
-    }
-    catch (err) {
-        console.log(err)
-        throw new Error('Cannot create challenge')
-    }
+    const result = await models.Challenges.create(challenge)
+    if (result) res.send({ data: result })
+    else throw new Error('Cannot create challenge')
 }
 
 const deleteChallenge = async function(req, res){
