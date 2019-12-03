@@ -2,28 +2,27 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Challenges', {
+    return queryInterface.createTable('ServiceAccount', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      routine_type: {
+      type: {
         allowNull: false,
-        type: Sequelize.ENUM('daily','weekly','monthly')
+        type: Sequelize.ENUM('g', 'f', 'k')
       },
-      object_unit:{
+      token: {
         allowNull: false,
-        type: Sequelize.ENUM('distance','time')
+        type: Sequelize.STRING
       },
-      quota:{
-        allowNull: false,
-        type: Sequelize.DOUBLE
+      refresh: {
+        type: Sequelize.STRING
       },
-      exercise_type: {
+      user_id: {
         allowNull: false,
-        type: Sequelize.ENUM('running', 'cycling')
+        type: Sequelize.INTEGER
       },
       created_at: {
         allowNull: false,
@@ -33,6 +32,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Challenges');
+      return queryInterface.dropTable('ServiceAccount');
   }
 };
