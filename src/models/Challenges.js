@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
   });
   
   challenges.associate = function(models) {
-    challenges.belongsToMany(models.Users, {through: 'UserChallenges'});
+    challenges.belongsToMany(models.Users, { through: 'UserChallenges', foreignKey: 'challenge_id' });
   };
   return challenges;
 };
