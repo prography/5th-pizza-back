@@ -5,7 +5,6 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
 const envPath = path.join(__dirname, '..', '.env');
@@ -41,7 +40,6 @@ db.Challenges = require('./Challenges')(sequelize, Sequelize);
 db.Records = require('./Records')(sequelize, Sequelize);
 db.Users = require('./Users')(sequelize, Sequelize);
 db.ServiceAccount = require('./ServiceAccount')(sequelize, Sequelize);
-db.UserChallenges = require('./UserChallenges')(sequelize, Sequelize);
 
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {

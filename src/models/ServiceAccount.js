@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     serviceAccount.associate = function(models) {
-        //todo: 관계 설정
+        serviceAccount.belongsTo(models.Users, {foreignKey: 'user_id'});
     };
     return serviceAccount;
 }
