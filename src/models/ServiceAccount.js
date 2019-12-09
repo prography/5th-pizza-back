@@ -2,7 +2,7 @@
 
 module.exports = (sequelize, DataTypes) => {
     const serviceAccount = sequelize.define('ServiceAccount',{
-        type: DataTypes.ENUM('g','k','f'),
+        type: DataTypes.ENUM('google','kakao','facebook'),
         token: DataTypes.STRING,
         refresh: DataTypes.STRING,
         user_id: DataTypes.INTEGER,
@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     serviceAccount.associate = function(models) {
-        serviceAccount.belongsTo(models.Users, {foreignKey: 'user_id'});
+        //serviceAccount.hasOne(models.Users, { foreignKey: 'user_id' });
     };
     return serviceAccount;
 }
