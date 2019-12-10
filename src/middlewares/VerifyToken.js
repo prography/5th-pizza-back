@@ -11,13 +11,13 @@ const verifyToken = async function(req, res, next ){
         const decoded = jwt.verify(token , process.env.PASSWORD_SECRET)
         const user_id = decoded.user
         console.log(user_id)
-        const user  = await models.Users.findOne({ where: {user_id: user_id} })
+        const user  = await models.Users.findOne({ where: { user_id: user_id } })
         if (user) {
             req.user = user
             next();
         }
         else {
-            res.status(401).send( { error: 'Not logged in' } );
+            res.status(401).send({ error: 'Not logged in' });
         }
     }
 }
