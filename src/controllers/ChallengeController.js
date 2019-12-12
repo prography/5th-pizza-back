@@ -5,8 +5,8 @@ const Op = sequelize.Op;
 
 const getChallenges = async function(req ,res){
     const user = req.user
-    const challenges = await models.UserChallenges.findAll({ where: { user_id: user.user_id }, include: { model: models.Challenges }});
-    res.send({ data: challenges });
+    const challenges = await user.getChallenges()
+    res.send({ data: challenges.map(challenge => ({ ...challenge.toJSON(), UserChallenges: undefined })) });
 }
 
 const getChallenge = async function(req, res){
@@ -70,7 +70,7 @@ const deleteChallenge = async function(req, res){
     if (result) {
         res.send({ data: result })
     }
-    
+
     else {
         throw new Error('Cannot delete challenge')
     }
