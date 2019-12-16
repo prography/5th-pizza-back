@@ -4,7 +4,8 @@ const moment = require('moment')
 const Op = sequelize.Op;
 
 const getRecords = async function(req, res){
-    const records = await models.Records.findAll();
+    const user = req.user
+    const records = await models.Records.findAll({ where: { user_id: user.id } });
     res.send({ data: records });
 }
 
@@ -23,6 +24,7 @@ const createRecord = async function(req, res){
     const body = req.body;
     const record = {
         user_id: req.user.id,
+        challenge_id: body.challenge_id,
         running_time: body.running_time,
         distance: body.distance,
         created_at: moment()

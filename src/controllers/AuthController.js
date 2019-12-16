@@ -8,12 +8,6 @@ const kakaoLogin = async function(req, res){
     
     if (access_token) {
         const userInfo = await getUserInfo(access_token)
-        const serviceAccount = {
-            type: 'kakao',
-            token: access_token,
-            user_id: userInfo.id,
-            created_at: moment()
-        }
         const isExist = await models.Users.findOne({ where: { user_id: userInfo.id } })
         const token = jwt.sign({ user_id: userInfo.id }, process.env.PASSWORD_SECRET , { expiresIn: '7d' })
 
@@ -25,6 +19,13 @@ const kakaoLogin = async function(req, res){
                 created_at: moment()
             }
             const result = await models.Users.create(user)
+            const serviceAccount = {
+                type: 'kakao',
+                token: access_token,
+                user_id: result.id,
+                created_at: moment()
+            }
+            await models.ServiceAccount.create(serviceAccount)
             if (result) { res.send({ data: result, access_token: token }) }
             else { throw new Error('Cannot create user') }
         }
