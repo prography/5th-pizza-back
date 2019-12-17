@@ -41,6 +41,16 @@ const setDailyAchievement = function(challenge, record){
 }
 
 const setWeeklyAchievement = function(challenge, user){
+    const achievement = calculateAchievement(challenge, user)
+    return { achievement: achievement }
+}
+
+const setMonthlyAchievement = function(challenge, user){
+    const achievement = calculateAchievement(challenge, user)
+    return { achievement: achievement }
+}
+
+const calculateAchievement = function(challenge, user){
     let total = 0
     if (challenge.object_unit == 'time') {
         total = await models.Records.sum('running_time', 
@@ -69,38 +79,7 @@ const setWeeklyAchievement = function(challenge, user){
     }
     
     const achievement = (total / challenge.quota) * 100
-    return { achievement: achievement }
-}
-
-const setMonthlyAchievement = function(challenge, user){
-    if (challenge.object_unit == 'time') {
-        total = await models.Records.sum('running_time', 
-        { where: 
-            {[Op.and]: [
-                { challege_id: challenge.id }, 
-                { user_id: user.id }, 
-                { created_at: {[Op.between]: [ challenge.created_at, moment()]}}
-            ]}
-        })
-    }
-    
-    else if (challenge.object_unit == 'distance') {
-        total = await models.Records.sum('distance', 
-        { where: 
-            {[Op.and]: [
-                { challege_id: challenge.id }, 
-                { user_id: user.id }, 
-                { created_at: {[Op.between]: [ challenge.created_at, moment()]}}
-            ]}
-        })
-    }
-    
-    else {
-        throw new Error('Wrong object unit')
-    }
-    
-    const achievement = (total / challenge.quota) * 100
-    return { achievement: achievement }
+    return achievement
 }
 
 module.exports = { setAchievement }
