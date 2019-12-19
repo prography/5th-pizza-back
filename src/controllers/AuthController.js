@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 const axios = require('axios')
 
 const kakaoLogin = async function(req, res){
-    const access_token = req.headers['x-kakao_token']
+    const access_token = req.headers['x-kakao-token']
     
     if (access_token) {
         const userInfo = await getUserInfo(access_token)
