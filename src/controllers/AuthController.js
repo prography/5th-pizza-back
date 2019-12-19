@@ -8,29 +8,23 @@ const kakaoLogin = async function(req, res){
     
     if (access_token) {
         const userInfo = await getUserInfo(access_token)
-        const isExist = await models.Users.findOne({ where: { user_id: userInfo.id } })
+        const isExist = await models.Users.findOne({ where: { user_id: userInfo.id, type: 'kakao' }})
         const token = jwt.sign({ user_id: userInfo.id }, process.env.PASSWORD_SECRET , { expiresIn: '7d' })
 
         if (isExist) { res.send({ data: isExist, access_token: token }) }
         else {
             const user = {
+                type: 'kakao',
+                user_id: userInfo.id,
                 email: userInfo.kakao_account.email,
                 nickname: userInfo.properties.nickname,
                 created_at: moment()
             }
             const result = await models.Users.create(user)
-            const serviceAccount = {
-                type: 'kakao',
-                token: access_token,
-                user_id: result.id,
-                created_at: moment()
-            }
-            await models.ServiceAccount.create(serviceAccount)
             if (result) { res.send({ data: result, access_token: token }) }
             else { throw new Error('Cannot create user') }
         }
     }
-
     else {
         throw new Error('kakao-token error')
     }
