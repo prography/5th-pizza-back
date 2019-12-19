@@ -13,6 +13,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER
       },
+      challenge_id: {
+        allowNull: false,
+        type:Sequelize.INTEGER
+      },
       running_time: {
         allowNull: false,
         type: Sequelize.DOUBLE
