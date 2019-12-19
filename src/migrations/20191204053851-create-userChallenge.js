@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('UserLogs', {
+    return queryInterface.createTable('UserChallenges', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,17 +13,18 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER
       },
-      log_in: {
+      challenge_id: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.INTEGER
       },
-      log_out: {
+      created_at: {
+        allowNull: false,
         type: Sequelize.DATE
       }
     });
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('UserLogs');
+    return queryInterface.dropTable('UserChallenges');
   }
 };

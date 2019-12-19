@@ -2,11 +2,20 @@ const sequelize = require('sequelize')
 const models = require('../models')
 const moment = require('moment')
 const Op = sequelize.Op;
-
+const { getAchievement } = require('../utils/AchievementCalculator')
 
 const getChallenges = async function(req ,res){
-    const challenges = await models.Challenges.findAll({ where: { user_id: req.user.user_id }, order: [['id', 'DESC']] });
-    res.send({ data: challenges });
+    const user = req.user
+    const challenges = await user.getChallenges()
+    const result = { 
+        data: await Promise.all(challenges.map(async (challenge) => ({ 
+            ...challenge.toJSON(), 
+            UserChallenges: undefined,
+            achievement: await getAchievement(challenge, user),
+            challengersNumber: (await challenge.getUsers()).length 
+        })))
+    }
+    res.send(result)
 }
 
 const getChallenge = async function(req, res){
@@ -21,10 +30,10 @@ const getChallenge = async function(req, res){
 }
 
 const createChallenge = async function(req, res){
+    const user = req.user.user_id
     const body = req.body
 
     const challenge = {
-        user_id: req.user.user_id,
         routine_type: body.routine_type,
         object_unit: body.object_unit,
         quota: body.quota,
@@ -32,22 +41,46 @@ const createChallenge = async function(req, res){
         created_at: moment()
     }
 
-    try{
-        const result = await models.Challenges.create(challenge)
-        res.send({ data: result })
+    const isExist = await models.Challenges.findOne({ where: {
+        [Op.and]: [ 
+            {routine_type: challenges.routine_type},
+            {object_unit: challenges.object_unit},
+            {quota: challenges.quota},
+            {exercise_type: challenges.exercise_type}
+        ]}
+    })
+
+    if (isExist) {
+        const userChallenge = {
+            user_id: user,
+            challenge_id: isExist.id,
+            created_at: moment()
+        }
+        const result = await models.UserChallenges.create(userChallenge)
+        if (result) res.send({ data: result })
+        else throw new Error('Cannot create UserChallenge')
     }
-    catch (err) {
-        throw new Error('Cannot create challenge')
+
+    else{
+        const newChallenge = await models.Challenges.create(challenge)
+        const userChallenge = {
+            user_id: user,
+            challenge_id: newChallenge.id,
+            created_at: moment()
+        }
+        const result = await models.UserChallenges.create(userChallenge)
+        if (newChallenge) res.send({ data: result })
+        else throw new Error('Cannot create challenge')
     }
 }
 
 const deleteChallenge = async function(req, res){
     const id = req.params.challenge
-    const result = await models.Challenges.destroy({ where: {id: id} })
+    const result = await models.Challenges.destroy({ where: { id: id } })
     if (result) {
         res.send({ data: result })
     }
-    
+
     else {
         throw new Error('Cannot delete challenge')
     }

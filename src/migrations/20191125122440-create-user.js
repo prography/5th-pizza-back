@@ -11,13 +11,13 @@ module.exports = {
       },
       user_id: {
         allowNull: false,
-        type: Sequelize.INTEGER
-      },
-      email: {
         type: Sequelize.STRING
       },
-      nickname: {
+      name: {
         allowNull: false,
+        type: Sequelize.STRING
+      },
+      email: {
         type: Sequelize.STRING
       },
       created_at: {

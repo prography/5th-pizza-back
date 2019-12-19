@@ -4,7 +4,8 @@ const moment = require('moment')
 const Op = sequelize.Op;
 
 const getRecords = async function(req, res){
-    const records = await models.Records.findAll();
+    const user = req.user
+    const records = await models.Records.findAll({ where: { user_id: user.id } });
     res.send({ data: records });
 }
 
@@ -22,7 +23,8 @@ const getRecord = async function(req, res){
 const createRecord = async function(req, res){
     const body = req.body;
     const record = {
-        user_id: req.user.user_id,
+        user_id: req.user.id,
+        challenge_id: body.challenge_id,
         running_time: body.running_time,
         distance: body.distance,
         created_at: moment()
@@ -39,9 +41,9 @@ const createRecord = async function(req, res){
 
 const deleteRecord = async function(req, res){
     const id = req.params.record
-    const result = await models.Records.destroy( { where: {id: id} } )
+    const result = await models.Records.destroy({ where: { id: id } })
     if (result) {
-        res.send( { data: result } )
+        res.send({ data: result })
     }
     else {
         throw new Error('Cannot delete record')
