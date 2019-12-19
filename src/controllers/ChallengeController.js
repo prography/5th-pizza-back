@@ -43,10 +43,10 @@ const createChallenge = async function(req, res){
 
     const isExist = await models.Challenges.findOne({ where: {
         [Op.and]: [ 
-            {routine_type: challenges.routine_type},
-            {object_unit: challenges.object_unit},
-            {quota: challenges.quota},
-            {exercise_type: challenges.exercise_type}
+            {routine_type: challenge.routine_type},
+            {object_unit: challenge.object_unit},
+            {quota: challenge.quota},
+            {exercise_type: challenge.exercise_type}
         ]}
     })
 
