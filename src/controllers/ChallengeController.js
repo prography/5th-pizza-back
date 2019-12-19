@@ -2,11 +2,20 @@ const sequelize = require('sequelize')
 const models = require('../models')
 const moment = require('moment')
 const Op = sequelize.Op;
+const { getAchievement } = require('../utils/AchievementCalculator')
 
 const getChallenges = async function(req ,res){
     const user = req.user
     const challenges = await user.getChallenges()
-    res.send({ data: challenges.map(challenge => ({ ...challenge.toJSON(), UserChallenges: undefined })) });
+    const result = { 
+        data: await Promise.all(challenges.map(async (challenge) => ({ 
+            ...challenge.toJSON(), 
+            UserChallenges: undefined,
+            achievement: await getAchievement(challenge, user),
+            challengersNumber: (await challenge.getUsers()).length 
+        })))
+    }
+    res.send(result)
 }
 
 const getChallenge = async function(req, res){
