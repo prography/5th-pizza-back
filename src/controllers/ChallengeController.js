@@ -30,7 +30,7 @@ const getChallenge = async function(req, res){
 }
 
 const createChallenge = async function(req, res){
-    const user = req.user.user_id
+    const user = req.user
     const body = req.body
 
     const challenge = {
@@ -51,32 +51,21 @@ const createChallenge = async function(req, res){
     })
 
     if (isExist) {
-        const userChallenge = {
-            user_id: user,
-            challenge_id: isExist.id,
-            created_at: moment()
-        }
-        const result = await models.UserChallenges.create(userChallenge)
+        const result = await user.addChallenge(isExist)
         if (result) res.send({ data: result })
         else throw new Error('Cannot create UserChallenge')
-    }
-
-    else{
+    } else {
         const newChallenge = await models.Challenges.create(challenge)
-        const userChallenge = {
-            user_id: user,
-            challenge_id: newChallenge.id,
-            created_at: moment()
-        }
-        const result = await models.UserChallenges.create(userChallenge)
+        const result = await user.addChallenge(newChallenge)
         if (newChallenge) res.send({ data: result })
         else throw new Error('Cannot create challenge')
     }
 }
 
 const deleteChallenge = async function(req, res){
+    const user = req.user
     const id = req.params.challenge
-    const result = await models.Challenges.destroy({ where: { id: id } })
+    const result = await models.UserChallenges.destroy({ where: { user_id: user.id , challenge_id: id} })
     if (result) {
         res.send({ data: result })
     }
