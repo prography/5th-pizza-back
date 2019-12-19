@@ -8,12 +8,9 @@ const kakaoLogin = async function(req, res){
     
     if (access_token) {
         const userInfo = await getUserInfo(access_token)
-        const isExist = await models.Users.findOne({ where: { user_id: userInfo.id, type: 'kakao' }})
-        const token = jwt.sign({ user_id: userInfo.id }, process.env.PASSWORD_SECRET , { expiresIn: '7d' })
-
-        if (isExist) { res.send({ data: isExist, access_token: token }) }
-        else {
-            const user = {
+        let user = await models.Users.findOne({ where: { user_id: userInfo.id, type: 'kakao' }})
+        if (!user) {
+            const userPayload = {
                 type: 'kakao',
                 user_id: userInfo.id,
                 email: userInfo.kakao_account.email,
@@ -21,10 +18,11 @@ const kakaoLogin = async function(req, res){
                 created_at: moment()
             }
             
-            const result = await models.Users.create(user)
-            if (result) { res.send({ data: result, access_token: token }) }
-            else { throw new Error('Cannot create user') }
+            user = await models.Users.create(userPayload)
+            if (!user) { throw new Error('Cannot create user') }
         }
+        const token = jwt.sign({ user_id: user.id }, process.env.PASSWORD_SECRET , { expiresIn: '7d' })
+        res.send({ data: user, access_token: token })
     }
     else {
         throw new Error('kakao-token error')
