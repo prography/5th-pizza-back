@@ -37,10 +37,16 @@ const getChallengeRecords = async function(req, res){
             user_id: user.id, 
             challenge_id: challengeId 
         } 
+<<<<<<< HEAD
     }) 
     res.send({ data: records })
 }
 
+=======
+    })
+    res.send({ data: records })
+}
+>>>>>>> challenge-record
 const createChallenge = async function(req, res){
     const user = req.user
     const body = req.body
