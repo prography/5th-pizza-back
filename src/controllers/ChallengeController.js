@@ -29,6 +29,17 @@ const getChallenge = async function(req, res){
     }
 }
 
+const getChallengeRecords = async function(req, res){
+    const challengeId = req.params.challengeId
+    const user = req.user
+    const records = await models.Records.findAll({ 
+        where: { 
+            user_id: user.id, 
+            challenge_id: challengeId 
+        } 
+    })
+    res.send({ data: records })
+}
 const createChallenge = async function(req, res){
     const user = req.user
     const body = req.body
