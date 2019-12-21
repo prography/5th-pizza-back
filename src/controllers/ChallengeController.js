@@ -6,7 +6,7 @@ const { getAchievement } = require('../utils/AchievementCalculator')
 
 const getChallenges = async function(req ,res){
     const user = req.user
-    const challenges = await user.getChallenges()
+    const challenges = await user.getChallenges({ order: [[ {model: 'UserChallenges'}, 'createdAt', 'DESC']] })
     const result = { 
         data: await Promise.all(challenges.map(async (challenge) => ({ 
             ...challenge.toJSON(), 
@@ -81,7 +81,8 @@ const createChallenge = async function(req, res){
 const deleteChallenge = async function(req, res){
     const user = req.user
     const id = req.params.challengeId
-    const result = await models.UserChallenges.destroy({ where: { user_id: user.id , challenge_id: id} })
+    const challenge = await models.Challenges.findOne({ where: {id: id} })
+    const result = await user.removeChallenge(challenge)
     if (result) {
         res.send({ data: result })
     }
