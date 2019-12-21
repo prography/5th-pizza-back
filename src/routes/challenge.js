@@ -4,8 +4,9 @@ const ChallengeController = require('../controllers/ChallengeController')
 const router = Router();
 
 router.get('', ChallengeController.getChallenges)
-router.get('/:challenge', ChallengeController.getChallenge)
+router.get('/:challengeId', ChallengeController.getChallenge)
+router.get('/:challengeId/records', ChallengeController.getChallengeRecords)
 router.post('', ChallengeController.createChallenge)
-router.delete('/:challenge', ChallengeController.deleteChallenge)
+router.delete('/:challengeId', ChallengeController.deleteChallenge)
 
 module.exports = router;

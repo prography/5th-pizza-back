@@ -19,7 +19,7 @@ const getChallenges = async function(req ,res){
 }
 
 const getChallenge = async function(req, res){
-    const id = req.params.challenge;
+    const id = req.params.challengeId;
     const challenge = await models.Challenges.findOne({ where: { id: id } });
     if (challenge) {
         res.send({ data: challenge });
@@ -27,6 +27,18 @@ const getChallenge = async function(req, res){
     else {
         throw new Error('challenge does not exist')
     }
+}
+
+const getChallengeRecords = async function(req, res){
+    const challengeId = req.params.challengeId
+    const user = req.user
+    const records = await models.Records.findAll({ 
+        where: { 
+            user_id: user.id, 
+            challenge_id: challengeId 
+        } 
+    }) 
+    res.send({ data: records })
 }
 
 const createChallenge = async function(req, res){
@@ -51,20 +63,25 @@ const createChallenge = async function(req, res){
     })
 
     if (isExist) {
-        const result = await user.addChallenge(isExist)
+        const result = await user.getChallenges({
+            where: { id: isExist.id }
+        })
         if (result) res.send({ data: result })
-        else throw new Error('Cannot create UserChallenge')
+        else {
+            await user.addChallenge(newChallenge)
+            res.send({ data: result })
+        }
     } else {
         const newChallenge = await models.Challenges.create(challenge)
-        const result = await user.addChallenge(newChallenge)
-        if (newChallenge) res.send({ data: result })
+        await user.addChallenge(newChallenge)
+        if (newChallenge) res.send({ data: newChallenge })
         else throw new Error('Cannot create challenge')
     }
 }
 
 const deleteChallenge = async function(req, res){
     const user = req.user
-    const id = req.params.challenge
+    const id = req.params.challengeId
     const result = await models.UserChallenges.destroy({ where: { user_id: user.id , challenge_id: id} })
     if (result) {
         res.send({ data: result })
@@ -78,6 +95,7 @@ const deleteChallenge = async function(req, res){
 module.exports = {
     getChallenges,
     getChallenge,
+    getChallengeRecords,
     createChallenge,
     deleteChallenge
 }
