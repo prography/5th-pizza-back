@@ -3,6 +3,6 @@ const AuthController = require('../controllers/AuthController')
 
 const router = Router();
 
-router.post('/login', AuthController.kakaoLogin)
+router.post('/login/:type', AuthController.login)
 
 module.exports = router;

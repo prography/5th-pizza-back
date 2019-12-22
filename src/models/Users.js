@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     user_id: DataTypes.STRING,
     nickname: DataTypes.STRING,
     email: DataTypes.STRING,
-    type: DataTypes.ENUM('kakao', 'google', 'facebook'),
+    type: DataTypes.ENUM('kakao', 'google', 'facebook', 'naver'),
     created_at: DataTypes.DATE
   }, {
     timestamps: false
