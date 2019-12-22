@@ -1,23 +1,22 @@
 const models = require('../models')
-const moment = require('moment')
 const jwt = require('jsonwebtoken')
-const axios = require('axios')
+const UserInfo = require('../utils/GetUserInfo')
 
-const kakaoLogin = async function(req, res){
-    const access_token = req.headers['x-kakao-token']
-    
+const login = async function(req, res){
+    const access_token = req.headers['x-social-token']
+    const type = req.params.type
     if (access_token) {
-        const userInfo = await getUserInfo(access_token)
-        let user = await models.Users.findOne({ where: { user_id: userInfo.id, type: 'kakao' }})
+        let user
+        const userInfo = await UserInfo.getUserInfo(type, access_token)
+        if (type === 'google'){
+            user = await models.Users.findOne({ where: { email: userInfo.email, type: type }})
+        }
+        else {
+            user = await models.Users.findOne({ where: { user_id: userInfo.id, type: type }})
+        }
+
         if (!user) {
-            const userPayload = {
-                type: 'kakao',
-                user_id: userInfo.id,
-                email: userInfo.kakao_account.email,
-                nickname: userInfo.properties.nickname,
-                created_at: moment()
-            }
-            
+            const userPayload = await UserInfo.setUserPayload(type, userInfo)
             user = await models.Users.create(userPayload)
             if (!user) { throw new Error('Cannot create user') }
         }
@@ -25,21 +24,10 @@ const kakaoLogin = async function(req, res){
         res.send({ data: user, access_token: token })
     }
     else {
-        throw new Error('kakao-token error')
+        throw new Error('social token error')
     }
-    
-}
-
-const getUserInfo = async function(access_token) {
-   const userInfo = await axios.get('https://kapi.kakao.com/v2/user/me', 
-    {
-        headers: {
-            Authorization: `Bearer ${access_token}`
-        }
-    });
-    return userInfo.data
 }
 
 module.exports = {
-    kakaoLogin
+    login
 }
