@@ -8,11 +8,11 @@ const login = async function(req, res){
     if (access_token) {
         let user
         const userInfo = await UserInfo.getUserInfo(type, access_token)
-        if (type == 'google'){
+        if (type === 'google'){
             user = await models.Users.findOne({ where: { email: userInfo.email, type: type }})
         }
         else {
-            user = await models.Users.findOne({ where: { id: userInfo.id, type: type }})
+            user = await models.Users.findOne({ where: { user_id: userInfo.id, type: type }})
         }
 
         if (!user) {
