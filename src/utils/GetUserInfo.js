@@ -2,7 +2,6 @@ const moment = require('moment');
 const axios = require('axios');
 
 const getUserInfo = async function(type, access_token) {
-    console.log('aaaaaaaa')
     let userInfo
     const requestUrl = {
         kakao: 'https://kapi.kakao.com/v2/user/me',
@@ -35,6 +34,7 @@ const getKakaoUserInfo = async function(url, access_token) {
 }
 const getGoogleUserInfo = async function(url){
     const userInfo = await axios.get(url);
+
     return userInfo.data
 }
 const getFacebookUserInfo = async function(url, access_token){
@@ -47,7 +47,7 @@ const getFacebookUserInfo = async function(url, access_token){
     return userInfo.data
 }
 const getNaverUserInfo = async function(url ,access_token){
-    const userInfo = await axios.get(requestUrl[type], 
+    const userInfo = await axios.get(url, 
         {
             headers: {
                 Authorization: `Bearer ${access_token}`
