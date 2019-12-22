@@ -3,9 +3,8 @@ const jwt = require('jsonwebtoken')
 
 const verifyToken = async function(req, res, next){
     const token = req.headers['x-access-token']
-    
     if (!token) {
-        res.status(401).send({ error: 'token err' })
+        res.status(401).send({ error: 'server token err' })
     }
 
     else {
