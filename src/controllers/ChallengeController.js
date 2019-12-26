@@ -40,6 +40,7 @@ const getChallengeRecords = async function(req, res){
     }) 
     res.send({ data: records })
 }
+
 const createChallenge = async function(req, res){
     const user = req.user
     const body = req.body
@@ -65,7 +66,13 @@ const createChallenge = async function(req, res){
         const result = await user.getChallenges({
             where: { id: isExist.id }
         })
-        if (result) res.send({ data: result })
+        if (result) {
+            res.send({ 
+                data: await Promise.all(result.map(async (challenge) => ({ 
+                    ...challenge.toJSON(), 
+                    UserChallenges: undefined })))
+                })
+            }
         else {
             await user.addChallenge(newChallenge)
             res.send({ data: result })
@@ -73,7 +80,7 @@ const createChallenge = async function(req, res){
     } else {
         const newChallenge = await models.Challenges.create(challenge)
         await user.addChallenge(newChallenge)
-        if (newChallenge) res.send({ data: newChallenge })
+        if (newChallenge) res.send({ data: [newChallenge] })
         else throw new Error('Cannot create challenge')
     }
 }
