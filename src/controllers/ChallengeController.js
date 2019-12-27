@@ -63,10 +63,8 @@ const createChallenge = async function(req, res){
     })
 
     if (isExist) {
-        const result = await user.getChallenges({
-            where: { id: isExist.id }
-        })
-        if (result) {
+        const result = await user.getChallenges({ where: { id: isExist.id }})
+        if (result.length) {
             res.send({ 
                 data: await Promise.all(result.map(async (challenge) => ({ 
                     ...challenge.toJSON(), 
@@ -74,8 +72,8 @@ const createChallenge = async function(req, res){
                 })
             }
         else {
-            await user.addChallenge(newChallenge)
-            res.send({ data: result })
+            await user.addChallenge(isExist)
+            res.send({ data: isExist })
         }
     } else {
         const newChallenge = await models.Challenges.create(challenge)
