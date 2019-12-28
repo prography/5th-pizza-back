@@ -5,7 +5,8 @@ module.exports = (sequelize, DataTypes) => {
     challenge_id: DataTypes.INTEGER,
     running_time: DataTypes.DOUBLE,
     distance: DataTypes.DOUBLE,
-    created_at: DataTypes.DATE
+    created_at: DataTypes.DATE,
+    screenshot: DataTypes.STRING
   }, 
   {
     timestamps: false

@@ -28,6 +28,10 @@ module.exports = {
       created_at: {
         allowNull: false,
         type: Sequelize.DATE
+      },
+      screenshot: {
+        allowNull: false,
+        type: Sequelize.STRING
       }
     });
   },

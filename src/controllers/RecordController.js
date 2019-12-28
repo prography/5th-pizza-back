@@ -1,7 +1,5 @@
-const sequelize = require('sequelize')
 const models = require('../models')
 const moment = require('moment')
-const Op = sequelize.Op;
 
 const getRecords = async function(req, res){
     const user = req.user
@@ -27,6 +25,7 @@ const createRecord = async function(req, res){
         challenge_id: body.challenge_id,
         running_time: body.running_time,
         distance: body.distance,
+        screenshot: body.screenshot,
         created_at: moment()
     }
     const result = await models.Records.create(record)

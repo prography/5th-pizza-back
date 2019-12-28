@@ -23,6 +23,7 @@ const getUserInfo = async function(type, access_token) {
     }
     return userInfo
 }
+
 const getKakaoUserInfo = async function(url, access_token) {
     const userInfo = await axios.get(url, 
         {
