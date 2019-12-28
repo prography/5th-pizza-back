@@ -45,48 +45,52 @@ const createChallenge = async function(req, res){
     const user = req.user
     const body = req.body
 
-    const challenge = {
-        routine_type: body.routine_type,
-        object_unit: body.object_unit,
-        quota: body.quota,
-        exercise_type: body.exercise_type,
-        created_at: moment()
-    }
-
-    const isExist = await models.Challenges.findOne({ where: {
-        [Op.and]: [ 
-            {routine_type: challenge.routine_type},
-            {object_unit: challenge.object_unit},
-            {quota: challenge.quota},
-            {exercise_type: challenge.exercise_type}
-        ]}
-    })
-
-    if (isExist) {
-        const result = await user.getChallenges({ where: { id: isExist.id }})
-        if (result.length) {
-            res.send({ 
-                data: await Promise.all(result.map(async (challenge) => ({ 
-                    ...challenge.toJSON(), 
-                    UserChallenges: undefined })))
-                })
-            }
-        else {
-            await user.addChallenge(isExist)
-            res.send({ data: isExist })
-        }
+    if (!body.quota) {
+        res.send({ data: [{ error: 'quota value error'}] })
     } else {
-        const newChallenge = await models.Challenges.create(challenge)
-        await user.addChallenge(newChallenge)
-        if (newChallenge) res.send({ data: [newChallenge] })
-        else throw new Error('Cannot create challenge')
+        const challenge = {
+            routine_type: body.routine_type,
+            object_unit: body.object_unit,
+            quota: body.quota,
+            exercise_type: body.exercise_type,
+            created_at: moment()
+        }
+    
+        const isExist = await models.Challenges.findOne({ where: {
+            [Op.and]: [ 
+                {routine_type: challenge.routine_type},
+                {object_unit: challenge.object_unit},
+                {quota: challenge.quota},
+                {exercise_type: challenge.exercise_type}
+            ]}
+        })
+    
+        if (isExist) {
+            const result = await user.getChallenges({ where: { id: isExist.id }})
+            if (result.length) {
+                res.send({ 
+                    data: await Promise.all(result.map(async (challenge) => ({ 
+                        ...challenge.toJSON(), 
+                        UserChallenges: undefined })))
+                    })
+                }
+            else {
+                await user.addChallenge(isExist)
+                res.send({ data: [isExist] })
+            }
+        } else {
+            const newChallenge = await models.Challenges.create(challenge)
+            await user.addChallenge(newChallenge)
+            if (newChallenge) res.send({ data: [newChallenge] })
+            else throw new Error('Cannot create challenge')
+        }
     }
 }
 
 const deleteChallenge = async function(req, res){
     const user = req.user
     const id = req.params.challengeId
-    const challenge = await models.Challenges.findOne({ where: {id: id} })
+    const challenge = await models.Challenges.findOne({ where: { id: id } })
     const result = await user.removeChallenge(challenge)
     if (result) {
         res.send({ data: result })
