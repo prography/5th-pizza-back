@@ -10,7 +10,7 @@ const getRecords = async function(req, res){
 }
 
 const getRecord = async function(req, res){
-    const id = req.params.record;
+    const id = req.params.recordId;
     const record = await models.Records.findOne({ where: { id: id } });
     if (record) {
         res.send({ data: record });
@@ -40,7 +40,7 @@ const createRecord = async function(req, res){
 }
 
 const deleteRecord = async function(req, res){
-    const id = req.params.record
+    const id = req.params.recordId
     const result = await models.Records.destroy({ where: { id: id } })
     if (result) {
         res.send({ data: result })
