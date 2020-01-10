@@ -36,9 +36,9 @@ fs
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
-db.Challenges = require('./Challenges')(sequelize, Sequelize);
-db.Records = require('./Records')(sequelize, Sequelize);
-db.Users = require('./Users')(sequelize, Sequelize);
+db.Challenges = require('./Challenge')(sequelize, Sequelize);
+db.Records = require('./Record')(sequelize, Sequelize);
+db.Users = require('./User')(sequelize, Sequelize);
 
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
