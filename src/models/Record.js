@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     running_time: DataTypes.DOUBLE,
     distance: DataTypes.DOUBLE,
     created_at: DataTypes.DATE,
-    screenshot: DataTypes.STRING
+    screenshot: DataTypes.JSON
   }, 
   {
     timestamps: false
