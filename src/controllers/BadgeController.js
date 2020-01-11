@@ -18,6 +18,10 @@ const createBadge = async(req, res) => {
     }
 
     const result = await models.Badges.create(badge)
-
     res.send({data: result})
+}
+
+module.exports = {
+    getBadges,
+    createBadge
 }
