@@ -24,8 +24,7 @@ sequelize = new Sequelize(
   }
 );
 
-fs
-  .readdirSync(__dirname)
+fs.readdirSync(__dirname)
   .filter(file => {
     return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
   })
@@ -39,6 +38,7 @@ db.Sequelize = Sequelize;
 db.Challenges = require('./Challenge')(sequelize, Sequelize);
 db.Records = require('./Record')(sequelize, Sequelize);
 db.Users = require('./User')(sequelize, Sequelize);
+db.Badges = require('./Badge')(sequelize, Sequelize);
 
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {

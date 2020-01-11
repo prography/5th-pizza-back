@@ -31,7 +31,7 @@ module.exports = {
       },
       screenshot: {
         allowNull: false,
-        type: Sequelize.STRING
+        type: Sequelize.JSON
       }
     });
   },

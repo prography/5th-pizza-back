@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
   
   user.associate = function(models) {
     user.belongsToMany(models.Challenges, { through: 'UserChallenges' });
+    user.hasMany(models.Badges);
   };
   return user;
 };
