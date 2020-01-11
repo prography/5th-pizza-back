@@ -33,11 +33,13 @@ const getKakaoUserInfo = async function(url, access_token) {
         });
     return userInfo.data
 }
+
 const getGoogleUserInfo = async function(url){
     const userInfo = await axios.get(url);
 
     return userInfo.data
 }
+
 const getFacebookUserInfo = async function(url, access_token){
     const userInfo = await axios.get(url, 
         {
@@ -47,6 +49,7 @@ const getFacebookUserInfo = async function(url, access_token){
         });
     return userInfo.data
 }
+
 const getNaverUserInfo = async function(url ,access_token){
     const userInfo = await axios.get(url, 
         {
