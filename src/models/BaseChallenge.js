@@ -1,6 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const challenge = sequelize.define('Challenges', {
+  const baseChallenge = sequelize.define('BaseChallenges', {
     routine_type: DataTypes.ENUM('daily','weekly','monthly'),
     object_unit: DataTypes.ENUM('distance','time'),
     quota: DataTypes.DOUBLE,
@@ -11,8 +11,8 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: false
   });
   
-  challenge.associate = function(models) {
-    challenge.belongsToMany(models.Users, { through: 'UserChallenges' });
+  baseChallenge.associate = function(models) {
+    baseChallenge.belongsToMany(models.Users, { through: 'UserChallenges' });
   };
-  return challenge;
+  return baseChallenge;
 };
