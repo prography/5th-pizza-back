@@ -95,7 +95,6 @@ const deleteChallenge = async function(req, res){
     if (result) {
         res.send({ data: result })
     }
-
     else {
         throw new Error('Cannot delete challenge')
     }

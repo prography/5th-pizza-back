@@ -35,6 +35,7 @@ fs.readdirSync(__dirname)
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+
 db.BaseChallenges = require('./BaseChallenge')(sequelize, Sequelize);
 db.Records = require('./Record')(sequelize, Sequelize);
 db.Users = require('./User')(sequelize, Sequelize);
