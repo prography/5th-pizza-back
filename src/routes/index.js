@@ -17,6 +17,6 @@ router.use(authUtil.verifyToken);
 router.use('/challenges', challenge);
 router.use('/records', record);
 router.use('/user', user);
-router.user('/badge', badge);
+router.use('/badge', badge);
 
 module.exports = router;

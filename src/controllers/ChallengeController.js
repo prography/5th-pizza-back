@@ -6,7 +6,7 @@ const { getAchievement } = require('../utils/AchievementCalculator')
 
 const getChallenges = async function(req ,res){
     const user = req.user
-    const challenges = await user.getChallenges({ order: [[ {model: 'UserChallenges'}, 'createdAt', 'DESC']] })
+    const challenges = await user.getBaseChallenges({ order: [[ {model: 'UserChallenges'}, 'createdAt', 'DESC']] })
     const result = { 
         data: await Promise.all(challenges.map(async (challenge) => ({ 
             ...challenge.toJSON(), 
@@ -20,7 +20,7 @@ const getChallenges = async function(req ,res){
 
 const getChallenge = async function(req, res){
     const id = req.params.challengeId;
-    const challenge = await models.Challenges.findOne({ where: { id: id } });
+    const challenge = await models.BaseChallenges.findOne({ where: { id: id } });
     if (challenge) {
         res.send({ data: challenge });
     }
@@ -56,7 +56,7 @@ const createChallenge = async function(req, res){
             created_at: moment()
         }
     
-        const isExist = await models.Challenges.findOne({ where: {
+        const isExist = await models.BaseChallenges.findOne({ where: {
             [Op.and]: [ 
                 {routine_type: challenge.routine_type},
                 {object_unit: challenge.object_unit},
@@ -66,7 +66,7 @@ const createChallenge = async function(req, res){
         })
     
         if (isExist) {
-            const result = await user.getChallenges({ where: { id: isExist.id }})
+            const result = await user.getBaseChallenges({ where: { id: isExist.id }})
             if (result.length) {
                 res.send({ 
                     data: await Promise.all(result.map(async (challenge) => ({ 
@@ -75,12 +75,12 @@ const createChallenge = async function(req, res){
                     })
                 }
             else {
-                await user.addChallenge(isExist)
+                await user.addBaseChallenge(isExist)
                 res.send({ data: [isExist] })
             }
         } else {
-            const newChallenge = await models.Challenges.create(challenge)
-            await user.addChallenge(newChallenge)
+            const newChallenge = await models.BaseChallenges.create(challenge)
+            await user.addBaseChallenge(newChallenge)
             if (newChallenge) res.send({ data: [newChallenge] })
             else throw new Error('Cannot create challenge')
         }
@@ -95,7 +95,6 @@ const deleteChallenge = async function(req, res){
     if (result) {
         res.send({ data: result })
     }
-
     else {
         throw new Error('Cannot delete challenge')
     }
