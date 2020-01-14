@@ -3,7 +3,10 @@ const moment = require('moment')
 
 const getRecords = async function(req, res){
     const user = req.user
-    const records = await models.Records.findAll({ where: { user_id: user.id } });
+    const records = await models.Records.findAll({ 
+        where: { user_id: user.id }, 
+        order: ['createdAt', 'DESC']
+    });
     res.send({ data: records });
 }
 
