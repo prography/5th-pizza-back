@@ -30,8 +30,7 @@ module.exports = {
         type: Sequelize.DATE
       },
       screenshot: {
-        allowNull: false,
-        type: Sequelize.JSON
+        type: Sequelize.STRING
       }
     });
   },
