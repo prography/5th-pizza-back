@@ -7,8 +7,8 @@ const user = require('./user');
 const auth = require('./auth');
 const badge = require('./badge');
 
-router.get('/', function(req, res){
-    res.send( { message: 'TEST' } );
+router.get('/policy', function(req, res){
+    res.render('privacyPolicy', { title: '개인정보보호정책' })
 })
 
 router.use('/auth', auth);
