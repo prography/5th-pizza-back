@@ -33,10 +33,8 @@ const getChallengeRecords = async function(req, res){
     const challengeId = req.params.challengeId
     const user = req.user
     const records = await models.Records.findAll({ 
-        where: { 
-            user_id: user.id, 
-            challenge_id: challengeId 
-        } 
+        where: { user_id: user.id, challenge_id: challengeId },
+        order: [['created_at', 'DESC']]
     }) 
     res.send({ data: records })
 }
