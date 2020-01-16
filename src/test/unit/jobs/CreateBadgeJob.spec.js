@@ -1,4 +1,5 @@
-const CreateBadgeJob = require('../../../jobs/CreateBadgeJob');
+const { CreateBadgeJob } = require('../../../jobs/CreateBadgeJob');
+const app = require('../../../app');
 
 describe('test start!', () => {
 
@@ -7,8 +8,10 @@ describe('test start!', () => {
   })
 
   test('CreateBadgeJob test', async () => {
-    createBadgeJob = new CreateBadgeJob();
-    await createBadgeJob.handle();
+    const createBadgeJob = new CreateBadgeJob(process.env.TEST_USER_ID);
+    console.log('createBadgeJob start');
+    await createBadgeJob.run();
+    console.log('createBadgeJob end');
   })
 
   afterAll(() => {
