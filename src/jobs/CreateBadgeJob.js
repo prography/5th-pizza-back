@@ -1,76 +1,83 @@
-import { Records, Challenges, Badges } from "../models";
+const models = require("../models");
+const { Op } = require('sequelize');
 
-class CreateBadgeJob {
-    allRecords = []
-    cycleRecords = []
-    runningRecords = []
-    userId = undefined
-
+exports.CreateBadgeJob = class CreateBadgeJob {
     constructor(userId) {
         this.userId = userId
+        this.allRecords = []
+        this.cycleRecords = []
+        this.runningRecords = []
     }
 
     async handle() {
+        const Records = models.Records;
         this.allRecords = await Records.findAll({where: {user_id: this.userId}})
         this.cycleRecords = await Records.findAll({ 
             where: {[Op.and]: 
                 [{user_id: this.userId}, 
-                {challenge_id: {[Op.or]: getCycleChallengeId()}}]
+                {challenge_id: {[Op.in]: (await this.getCycleChallengeId()).map((data) => data.id)}}]
             }})
         this.runningRecords = await Records.findAll({ 
             where: { [Op.and]: 
                 [{ user_id: this.userId }, 
-                {challenge_id: { [Op.or]: getRunningChallengeId()}}]
+                {challenge_id: { [Op.in]: (await this.getRunningChallengeId()).map((data) => data.id)}}]
             }})
-        this.createBadgeByUser()
+        await this.createBadgeByUser()
     }
 
-    createCycleBadgeByUser() {
-        const cycleAccDistance = accumulatDistance(this.cycleRecords)
-        const cycleAccTime = accumulateTime(this.cycleRecords)
+    async createBadgeByUser() {
+        await this.createCycleBadgeByUser();
+        await this.createRunningBadgeByUser();
+    }
+
+    async createCycleBadgeByUser() {
+        const cycleAccDistance = this.accumulatDistance(this.cycleRecords)
+        const cycleAccTime = this.accumulateTime(this.cycleRecords)
+        console.log('cycle', cycleAccDistance, cycleAccTime)
         if (cycleAccDistance > 5000){
             const badge = {
                 type: 'Cycle_Accumulative_distance',
                 level: 5,
-                userId: this.userId
+                UserId: this.userId
             }
-            Badges.create(badge);
+            await models.Badges.create(badge);
         }
 
         if (cycleAccTime > 50000){
             const badge = {
                 type: 'Cycle_Accumulative_time',
                 level: 5,
-                userId: this.userId
+                UserId: this.userId
             }
-            Badges.create(badge);
+            await models.Badges.create(badge);
         }
     }
     
-    createRunningBadgeByUser() {
+    async createRunningBadgeByUser() {
         const runningAccDistance = this.accumulatDistance(this.runningRecords)
-        const runningAccTime = this.accumulateTime(this.accumulateTime)
+        const runningAccTime = this.accumulateTime(this.runningRecords)
+        console.log('running', runningAccDistance, runningAccTime)
         if (runningAccDistance > 3000){
             const badge = {
-                type: 'Cycle_Accumulative_distance',
+                type: 'Running_Accumulative_distance',
                 level: 3,
-                userId: this.userId
+                UserId: this.userId
             }
-            Badges.create(badge);
+            await models.Badges.create(badge);
         }
 
         if (runningAccTime > 50000){
             const badge = {
-                type: 'Cycle_Accumulative_time',
+                type: 'Running_Accumulative_time',
                 level: 5,
-                userId: this.userId
+                UserId: this.userId
             }
-            Badges.create(badge);
+            await models.Badges.create(badge);
         }
     }
     
-    createContinousRecordBadgeByUser() {
-
+    createContinousRecordBadgeByUser(records) {
+       
     }
     
     createSuccessChallengeBadgeByUser() {
@@ -88,12 +95,12 @@ class CreateBadgeJob {
     }
     
     getCycleChallengeId(){
-        const cycleChallengeId = Challenges.findAll({where: { type: 'cycle' }, attributes: ['id']});
+        const cycleChallengeId = models.BaseChallenges.findAll({where: { exercise_type: 'cycling' }, attributes: ['id']});
         return cycleChallengeId
     }
 
     getRunningChallengeId(){
-        const runningChallengeId = Challenges.findAll({where: { type: 'running' }, attributes: ['id']});
+        const runningChallengeId = models.BaseChallenges.findAll({where: { exercise_type: 'running' }, attributes: ['id']});
         return runningChallengeId
     }
 }

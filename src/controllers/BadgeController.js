@@ -8,6 +8,5 @@ const getBadges = async(req, res) => {
 }
 
 module.exports = {
-    getBadges,
-    createBadge
+    getBadges
 }
