@@ -1,15 +1,17 @@
+const { BaseJob } = require('./BaseJob');
 const models = require("../models");
 const { Op } = require('sequelize');
 
-exports.CreateBadgeJob = class CreateBadgeJob {
+class CreateBadgeJob extends BaseJob {
     constructor(userId) {
+        super();
         this.userId = userId
         this.allRecords = []
         this.cycleRecords = []
         this.runningRecords = []
     }
 
-    async handle() {
+    async beforeProcess() {
         const Records = models.Records;
         this.allRecords = await Records.findAll({where: {user_id: this.userId}})
         this.cycleRecords = await Records.findAll({ 
@@ -22,25 +24,32 @@ exports.CreateBadgeJob = class CreateBadgeJob {
                 [{ user_id: this.userId }, 
                 {challenge_id: { [Op.in]: (await this.getRunningChallengeId()).map((data) => data.id)}}]
             }})
+    }
+
+    async process() {
         await this.createBadgeByUser()
     }
 
-    async createBadgeByUser() {
-        await this.createCycleBadgeByUser();
-        await this.createRunningBadgeByUser();
+    createBadgeByUser() {
+        return Promise.all([
+            this.createCycleBadgeByUser(),
+            this.createRunningBadgeByUser(),
+            this.createContinuousRecordBadgeByUser(),
+            this.createSuccessChallengeBadgeByUser(),
+        ]);
     }
 
     async createCycleBadgeByUser() {
-        const cycleAccDistance = this.accumulatDistance(this.cycleRecords)
+        const cycleAccDistance = this.accumulateDistance(this.cycleRecords)
         const cycleAccTime = this.accumulateTime(this.cycleRecords)
-        console.log('cycle', cycleAccDistance, cycleAccTime)
+        const payloads = [];
         if (cycleAccDistance > 5000){
             const badge = {
                 type: 'Cycle_Accumulative_distance',
                 level: 5,
                 UserId: this.userId
             }
-            await models.Badges.create(badge);
+            payloads.push(models.Badges.create(badge));
         }
 
         if (cycleAccTime > 50000){
@@ -49,21 +58,22 @@ exports.CreateBadgeJob = class CreateBadgeJob {
                 level: 5,
                 UserId: this.userId
             }
-            await models.Badges.create(badge);
+            payloads.push(models.Badges.create(badge));
         }
+        return Promise.all(payloads);
     }
     
     async createRunningBadgeByUser() {
-        const runningAccDistance = this.accumulatDistance(this.runningRecords)
+        const runningAccDistance = this.accumulateDistance(this.runningRecords)
         const runningAccTime = this.accumulateTime(this.runningRecords)
-        console.log('running', runningAccDistance, runningAccTime)
+        const payloads = [];
         if (runningAccDistance > 3000){
             const badge = {
                 type: 'Running_Accumulative_distance',
                 level: 3,
                 UserId: this.userId
             }
-            await models.Badges.create(badge);
+            payloads.push(models.Badges.create(badge));
         }
 
         if (runningAccTime > 50000){
@@ -72,26 +82,31 @@ exports.CreateBadgeJob = class CreateBadgeJob {
                 level: 5,
                 UserId: this.userId
             }
-            await models.Badges.create(badge);
+            payloads.push(models.Badges.create(badge));
         }
+        return Promise.all(payloads)
     }
     
-    createContinousRecordBadgeByUser(records) {
-       
+    async createContinuousRecordBadgeByUser() {
+        // 오늘부터 과거 30일동안 확인
+        // 매일매일 유저의 모델에 연속 기록일 수를 세고 그것만으로 할까 했었는데, 조금 복잡할 것으로 보임
+        // 토요일에 내가 마저 하던가, 기록수가 많으면 배지를 주는 걸로 하는게 더 쉽지 않을까 해
     }
     
-    createSuccessChallengeBadgeByUser() {
-        
+    async createSuccessChallengeBadgeByUser() {
+        // 성공한 챌린지 숫자 세기
     }
 
-    accumulatDistance(records){
-        const totalDistance = records.reduce((acc, record) => acc + record.distance, 0)
-        return totalDistance
+    accumulateDistance(records){
+        return this.accumulate(records, 'distance');
     }
 
     accumulateTime(records){
-        const totalTime = records.reduce((acc, record) => acc + record.running_time, 0)
-        return totalTime
+        return this.accumulate(records, 'running_time')
+    }
+
+    accumulate(array, field, defaultValue = 0) {
+        return array.reduce((acc, item) => acc + item[field], defaultValue);
     }
     
     getCycleChallengeId(){
@@ -104,3 +119,5 @@ exports.CreateBadgeJob = class CreateBadgeJob {
         return runningChallengeId
     }
 }
+
+module.exports = { CreateBadgeJob };
