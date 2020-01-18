@@ -88,7 +88,7 @@ const createChallenge = async function(req, res){
 const deleteChallenge = async function(req, res){
     const user = req.user
     const id = req.params.challengeId
-    const challenge = await models.Challenges.findOne({ where: { id: id } })
+    const challenge = await models.BaseChallenges.findOne({ where: { id: id } })
     const result = await user.removeChallenge(challenge)
     if (result) {
         res.send({ data: result })
