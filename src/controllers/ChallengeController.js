@@ -39,50 +39,47 @@ const getChallengeRecords = async function(req, res){
     res.send({ data: records })
 }
 
+const findOrNewBaseChallenge = async (challengeBody) => {
+    const baseChallenge = await models.BaseChallenges.findOne({
+        where: {
+            [Op.and]: [
+                { routine_type: challengeBody.routine_type },
+                { object_unit: challengeBody.object_unit },
+                { quota: challengeBody.quota },
+                { exercise_type: challengeBody.exercise_type }
+            ]
+        }
+    })
+    if (baseChallenge) {
+        return baseChallenge;
+    } else {
+        return models.BaseChallenges.create(challengeBody)
+    }
+}
+
 const createChallenge = async function(req, res){
     const user = req.user
     const body = req.body
 
+    // validation
     if (!body.quota) {
-        res.send({ data: [{ error: 'quota value error'}] })
-    } else {
-        const challenge = {
-            routine_type: body.routine_type,
-            object_unit: body.object_unit,
-            quota: body.quota,
-            exercise_type: body.exercise_type,
-            created_at: moment()
-        }
-    
-        const isExist = await models.BaseChallenges.findOne({ where: {
-            [Op.and]: [ 
-                {routine_type: challenge.routine_type},
-                {object_unit: challenge.object_unit},
-                {quota: challenge.quota},
-                {exercise_type: challenge.exercise_type}
-            ]}
-        })
-    
-        if (isExist) {
-            const result = await user.getBaseChallenges({ where: { id: isExist.id }})
-            if (result.length) {
-                res.send({ 
-                    data: await Promise.all(result.map(async (challenge) => ({ 
-                        ...challenge.toJSON(), 
-                        UserChallenges: undefined })))
-                    })
-                }
-            else {
-                await user.addBaseChallenge(isExist)
-                res.send({ data: [isExist] })
-            }
-        } else {
-            const newChallenge = await models.BaseChallenges.create(challenge)
-            await user.addBaseChallenge(newChallenge)
-            if (newChallenge) res.send({ data: [newChallenge] })
-            else throw new Error('Cannot create challenge')
-        }
+        res.send({ data: [{ error: 'quota value error' }] });
+        return;
     }
+
+    // baseChallenge 확인
+    const baseChallenge = await findOrNewBaseChallenge(body);
+
+    const challenge = await models.Challenges.create({
+        UserId: user.id,
+        BaseChallengeId: baseChallenge.id,
+        start: moment(),
+        end: getEndDateByBaseChallengeType(baseChallenge.routine_type),
+        success: false,
+    })
+    res.send({
+        data: [challenge],
+    })
 }
 
 const deleteChallenge = async function(req, res){
