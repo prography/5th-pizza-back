@@ -40,6 +40,8 @@ db.BaseChallenges = require('./BaseChallenge')(sequelize, Sequelize);
 db.Records = require('./Record')(sequelize, Sequelize);
 db.Users = require('./User')(sequelize, Sequelize);
 db.Badges = require('./Badge')(sequelize, Sequelize);
+db.Challenges = require('./Challenge')(sequelize, Sequelize);
+
 
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
