@@ -6,13 +6,12 @@ const { getAchievement } = require('../utils/AchievementCalculator')
 
 const getChallenges = async function(req ,res){
     const user = req.user
-    const challenges = await user.getBaseChallenges({ order: [[ {model: 'UserChallenges'}, 'createdAt', 'DESC']] })
+    const challenges = await user.getChallenges({ order: [[ {model: 'Challenges'}, 'createdAt', 'DESC']] })
     const result = { 
         data: await Promise.all(challenges.map(async (challenge) => ({ 
-            ...challenge.toJSON(), 
-            UserChallenges: undefined,
+            ...challenge.toJSON(),
             achievement: await getAchievement(challenge, user),
-            challengersNumber: (await challenge.getUsers()).length 
+            challengersNumber: (await (await challenge.getBaseChallenge()).getChallenges()).length 
         })))
     }
     res.send(result)
@@ -57,6 +56,18 @@ const findOrNewBaseChallenge = async (challengeBody) => {
     }
 }
 
+const getEndDateByBaseChallengeType = (routineType) => {
+    if(routineType === 'daily'){
+        return moment().add(7, 'd');
+    }
+    else if(routineType === 'weekly'){
+        return moment().add(1, 'm');
+    }
+    else{
+        return moment().add(3, 'm');
+    }
+} 
+
 const createChallenge = async function(req, res){
     const user = req.user
     const body = req.body
@@ -70,23 +81,24 @@ const createChallenge = async function(req, res){
     // baseChallenge 확인
     const baseChallenge = await findOrNewBaseChallenge(body);
 
-    const challenge = await models.Challenges.create({
-        UserId: user.id,
-        BaseChallengeId: baseChallenge.id,
+    const payload = {
         start: moment(),
         end: getEndDateByBaseChallengeType(baseChallenge.routine_type),
-        success: false,
-    })
+        success: false
+    }
+
+    const challenge = await models.Challenges.create(payload)
+    await challenge.setUser(user);
+    await challenge.setBaseChallenge(baseChallenge);
+
     res.send({
         data: [challenge],
     })
 }
 
 const deleteChallenge = async function(req, res){
-    const user = req.user
     const id = req.params.challengeId
-    const challenge = await models.BaseChallenges.findOne({ where: { id: id } })
-    const result = await user.removeBaseChallenge(challenge)
+    const result = await models.Challenges.destroy({ where: { id } })
     if (result) {
         res.send({ data: result })
     }

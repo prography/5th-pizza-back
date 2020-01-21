@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
   });
   
   baseChallenge.associate = function(models) {
-    baseChallenge.belongsToMany(models.Users, { through: 'UserChallenges' });
+    baseChallenge.hasMany(models.Challenges);
   };
   return baseChallenge;
 };
