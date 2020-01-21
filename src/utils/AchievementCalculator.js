@@ -3,7 +3,7 @@ const models = require('../models')
 const getAchievement = async function (challenge, user) {
     const records = await models.Records.findAll({ where: { user_id: user.id, challenge_id: challenge.id } })
     let total = 0;
-    let goal = challenge.quota;
+    let goal = (await challenge.getBaseChallenge()).quota;
     if (challenge.object_unit === 'time') {
         total = records.reduce((acc, record) => acc + record.running_time, 0);
     } else {
