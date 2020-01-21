@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
   });
   
   user.associate = function(models) {
-    user.belongsToMany(models.BaseChallenges, { through: 'UserChallenges' });
+    user.hasMany(models.Challenges);
     user.hasMany(models.Badges);
   };
   return user;

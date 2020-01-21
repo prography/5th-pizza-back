@@ -7,8 +7,8 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   challenge.associate = function (models) {
-    challenge.belongsTo(models.Users, { foreignKey: 'id' });
-    challenge.belongsTo(models.BaseChallenges, { foreignKey: 'id' });
+    challenge.belongsTo(models.Users);
+    challenge.belongsTo(models.BaseChallenges);
   };
   return challenge;
 };
