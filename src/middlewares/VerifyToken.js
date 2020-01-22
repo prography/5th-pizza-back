@@ -1,5 +1,5 @@
-const models = require('../models')
-const jwt = require('jsonwebtoken')
+import models from '../models';
+import jwt from 'jsonwebtoken';
 
 const verifyToken = async function(req, res, next){
     const token = req.headers['x-access-token']
@@ -21,6 +21,6 @@ const verifyToken = async function(req, res, next){
     }
 }
 
-module.exports = {
+export default {
     verifyToken
 }

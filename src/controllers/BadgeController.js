@@ -7,6 +7,6 @@ const getBadges = async(req, res) => {
     res.send({ data: badges })
 }
 
-module.exports = {
+export default {
     getBadges
 }

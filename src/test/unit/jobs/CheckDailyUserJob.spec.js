@@ -1,6 +1,5 @@
-const { CheckDailyUserJob } = require('../../../jobs/CheckDailyUserJob');
-const models = require('../../../models');
-const app = require('../../../app');
+import { CheckDailyUserJob } from '../../../jobs/CheckDailyUserJob';
+import models from '../../../models';
 
 describe('test start!', () => {
 

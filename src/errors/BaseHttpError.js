@@ -1,4 +1,4 @@
-const BaseError = require('./BaseError');
+import BaseError from './BaseError';
 
 class BaseHttpError extends BaseError {
   constructor(message, httpCode = 500) {
@@ -11,6 +11,6 @@ class BaseHttpError extends BaseError {
   }
 }
 
-module.exports = {
+export default {
   BaseHttpError
 }

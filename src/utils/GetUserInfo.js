@@ -1,5 +1,5 @@
-const moment = require('moment');
-const axios = require('axios');
+import moment from 'moment';
+import axios from 'axios';
 
 const getUserInfo = async function(type, access_token) {
     let userInfo
@@ -83,7 +83,7 @@ const setUserPayload = async function(type, userInfo){
     return userPayload
 }
 
-module.exports = {
+export default {
     getUserInfo,
     setUserPayload
 }

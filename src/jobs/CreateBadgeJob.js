@@ -2,7 +2,7 @@ const { BaseJob } = require('./BaseJob');
 const models = require("../models");
 const { Op } = require('sequelize');
 
-class CreateBadgeJob extends BaseJob {
+export class CreateBadgeJob extends BaseJob {
   constructor(userId) {
     super();
     this.userId = userId
@@ -133,5 +133,3 @@ class CreateBadgeJob extends BaseJob {
     return runningChallengeId
   }
 }
-
-module.exports = { CreateBadgeJob };

@@ -1,5 +1,4 @@
-const { CreateBadgeJob } = require('../../../jobs/CreateBadgeJob');
-const app = require('../../../app');
+import { CreateBadgeJob } from '../../../jobs/CreateBadgeJob';
 
 describe('test start!', () => {
 

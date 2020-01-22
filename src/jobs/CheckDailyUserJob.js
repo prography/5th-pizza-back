@@ -4,7 +4,7 @@ const { Op } = require('sequelize');
 const { getAchievement } = require('../utils/AchievementCalculator');
 const moment = require('moment');
 
-class CheckDailyUserJob extends BaseJob {
+export class CheckDailyUserJob extends BaseJob {
   constructor(user) {
     super();
     this.user = user
@@ -49,5 +49,3 @@ class CheckDailyUserJob extends BaseJob {
     }
   }
 }
-
-module.exports = { CheckDailyUserJob }

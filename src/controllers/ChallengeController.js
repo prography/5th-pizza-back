@@ -107,7 +107,7 @@ const deleteChallenge = async function(req, res){
     }
 }
 
-module.exports = {
+export default {
     getChallenges,
     getChallenge,
     getChallengeRecords,

@@ -1,4 +1,4 @@
-const models = require('../models')
+import models from '../models'
 
 const getAchievement = async function (challenge, user) {
     const records = await models.Records.findAll({ where: { user_id: user.id, challenge_id: challenge.id } })
@@ -12,4 +12,6 @@ const getAchievement = async function (challenge, user) {
     return Math.min(Math.round(total / goal * 100), 100)
 }
 
-module.exports = { getAchievement }
+export default { 
+    getAchievement 
+}

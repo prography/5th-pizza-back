@@ -15,6 +15,6 @@ const deleteUser = async function(req, res){
 }
 
 
-module.exports = {
+export default {
     deleteUser
 }

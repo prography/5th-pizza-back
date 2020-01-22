@@ -1,4 +1,4 @@
-const BaseError = require('./BaseError');
+import BaseError from './BaseError';
 
 class NotEnoughBadgeError extends BaseError {
   constructor(message) {
@@ -8,6 +8,6 @@ class NotEnoughBadgeError extends BaseError {
   }
 }
 
-module.exports = {
+export default {
   NotEnoughBadgeError
 }
