@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "start": "node src/",
-    "dev": "nodemon src/"
+    "dev": "nodemon --exec babel-node src/"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/prography/5th-pizza-back#readme",
   "dependencies": {
+    "@babel/polyfill": "^7.8.3",
     "@sentry/node": "^5.9.0",
     "axios": "^0.19.0",
     "body-parser": "^1.19.0",
@@ -36,6 +37,10 @@
     "sequelize-constants": "^1.0.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.8.3",
+    "@babel/core": "^7.8.3",
+    "@babel/node": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
     "jest": "^24.9.0",
     "nodemon": "^1.19.4",
     "supertest": "^4.0.2"
