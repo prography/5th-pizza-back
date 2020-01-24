@@ -1,8 +1,41 @@
 import moment from 'moment';
 import axios from 'axios';
+import { UserType } from '../models/User';
+
+const getFakeUserInfo = (type) => {
+    const fakeNickname = 'pizzaNick'
+    const fakeEmail = 'sample@pizza.com'
+    const fakeUserId = 123
+    switch (type) {
+        case UserType.Kakao:
+            return {
+                id: fakeUserId,
+                    kakao_account: {
+                        email: fakeEmail,
+                    },
+                    properties: {
+                        nickname: fakeNickname,
+                    }
+            }
+            case UserType.Google:
+                return {
+                    email: fakeEmail,
+                    nickname: fakeNickname,
+                }
+            default:
+                return {
+                    id: fakeUserId,
+                    email: fakeEmail,
+                    name: fakeNickname
+                }
+    }
+}
 
 const getUserInfo = async function(type, access_token) {
-    let userInfo
+    if (process.env.APP_ENV === 'test') {
+        return getFakeUserInfo(type)
+    }
+    let userInfo = null;
     const requestUrl = {
         kakao: 'https://kapi.kakao.com/v2/user/me',
         google: `https://oauth2.googleapis.com/tokeninfo?id_token=${access_token}`,
@@ -83,7 +116,7 @@ const setUserPayload = async function(type, userInfo){
     return userPayload
 }
 
-export default {
+export {
     getUserInfo,
     setUserPayload
 }
