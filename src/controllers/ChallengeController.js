@@ -1,12 +1,11 @@
-const sequelize = require('sequelize')
-const models = require('../models')
-const moment = require('moment')
-const Op = sequelize.Op;
-const { getAchievement } = require('../utils/AchievementCalculator')
+import { BaseChallenge, Challenge, Record } from '../models';
+import moment from 'moment';
+import { Op } from 'sequelize';
+import { getAchievement } from '../utils/AchievementCalculator';
 
 const getChallenges = async function(req ,res){
     const user = req.user
-    const challenges = await user.getChallenges({ order: [[ {model: 'Challenges'}, 'createdAt', 'DESC']] })
+    const challenges = await user.getChallenges({ order: [[ {model: 'Challenges'}, 'created_at', 'DESC']] })
     const result = { 
         data: await Promise.all(challenges.map(async (challenge) => ({ 
             ...challenge.toJSON(),
@@ -19,7 +18,7 @@ const getChallenges = async function(req ,res){
 
 const getChallenge = async function(req, res){
     const id = req.params.challengeId;
-    const challenge = await models.BaseChallenges.findOne({ where: { id: id } });
+    const challenge = await BaseChallenge.findOne({ where: { id: id } });
     if (challenge) {
         res.send({ data: challenge });
     }
@@ -31,7 +30,7 @@ const getChallenge = async function(req, res){
 const getChallengeRecords = async function(req, res){
     const challengeId = req.params.challengeId
     const user = req.user
-    const records = await models.Records.findAll({ 
+    const records = await Record.findAll({ 
         where: { user_id: user.id, challenge_id: challengeId },
         order: [['created_at', 'DESC']]
     }) 
@@ -39,20 +38,25 @@ const getChallengeRecords = async function(req, res){
 }
 
 const findOrNewBaseChallenge = async (challengeBody) => {
-    const baseChallenge = await models.BaseChallenges.findOne({
+    const baseChallenge = await BaseChallenge.findOne({
         where: {
             [Op.and]: [
-                { routine_type: challengeBody.routine_type },
-                { object_unit: challengeBody.object_unit },
+                { routineType: challengeBody.routine_type },
+                { objectUnit: challengeBody.object_unit },
                 { quota: challengeBody.quota },
-                { exercise_type: challengeBody.exercise_type }
+                { exerciseType: challengeBody.exercise_type }
             ]
         }
     })
     if (baseChallenge) {
         return baseChallenge;
     } else {
-        return models.BaseChallenges.create(challengeBody)
+        return BaseChallenge.create({
+            routineType: challengeBody.routine_type,
+            objectUnit: challengeBody.object_unit,
+            quota: challengeBody.quota,
+            exerciseType: challengeBody.exercise_type,
+        })
     }
 }
 
@@ -87,7 +91,7 @@ const createChallenge = async function(req, res){
         success: false
     }
 
-    const challenge = await models.Challenges.create(payload)
+    const challenge = await Challenge.create(payload)
     await challenge.setUser(user);
     await challenge.setBaseChallenge(baseChallenge);
 
@@ -98,7 +102,7 @@ const createChallenge = async function(req, res){
 
 const deleteChallenge = async function(req, res){
     const id = req.params.challengeId
-    const result = await models.Challenges.destroy({ where: { id } })
+    const result = await Challenge.destroy({ where: { id } })
     if (result) {
         res.send({ data: result })
     }

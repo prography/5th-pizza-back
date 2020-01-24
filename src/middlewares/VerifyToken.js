@@ -1,4 +1,4 @@
-import models from '../models';
+import { User } from '../models';
 import jwt from 'jsonwebtoken';
 
 const verifyToken = async function(req, res, next){
@@ -10,7 +10,7 @@ const verifyToken = async function(req, res, next){
     else {
         const decoded = jwt.verify(token , process.env.PASSWORD_SECRET)
         const user_id = decoded.user_id
-        const user  = await models.Users.findOne({ where: { id: user_id } })
+        const user  = await User.findOne({ where: { id: user_id } })
         if (user) {
             req.user = user
             next();

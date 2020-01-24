@@ -1,9 +1,9 @@
-const models = require('../models')
-const moment = require('moment')
+import { Record } from '../models';
+import moment from 'moment';
 
 const getRecords = async function(req, res){
     const user = req.user
-    const records = await models.Records.findAll({ 
+    const records = await Record.findAll({ 
         where: { user_id: user.id }, 
         order: [['created_at', 'DESC']]
     });
@@ -12,7 +12,7 @@ const getRecords = async function(req, res){
 
 const getRecord = async function(req, res){
     const id = req.params.recordId;
-    const record = await models.Records.findOne({ where: { id: id } });
+    const record = await Record.findOne({ where: { id: id } });
     if (record) {
         res.send({ data: record });
     }
@@ -31,7 +31,7 @@ const createRecord = async function(req, res){
         screenshot: body.screenshot,
         created_at: moment()
     }
-    const result = await models.Records.create(record)
+    const result = await Record.create(record)
     if (result) {
         res.send({ data: result });
     } 
@@ -42,7 +42,7 @@ const createRecord = async function(req, res){
 
 const deleteRecord = async function(req, res){
     const id = req.params.recordId
-    const result = await models.Records.destroy({ where: { id: id } })
+    const result = await Record.destroy({ where: { id: id } })
     if (result) {
         res.send({ data: result })
     }

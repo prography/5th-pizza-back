@@ -1,12 +1,7 @@
-const models = require('../models')
+import { Badge } from "../models";
 
-const getBadges = async(req, res) => {
+export const getBadges = async(req, res) => {
     const user = req.user
-    const badges = await models.Badges.findAll({ where: { userId: user.id } });
-
+    const badges = await Badge.findAll({ where: { userId: user.id } });
     res.send({ data: badges })
-}
-
-export default {
-    getBadges
 }
