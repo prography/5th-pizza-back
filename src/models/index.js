@@ -4,16 +4,6 @@ import { Badge } from './Badge';
 import { BaseChallenge } from './BaseChallenge';
 import { Challenge } from './Challenge';
 import { Record } from './Record';
-import dotenv from 'dotenv';
-import path from 'path';
-import fs from 'fs';
-
-const envPath = path.join(__dirname, '..', '.env');
-if (fs.existsSync(envPath)) {
-  dotenv.config({
-    path: envPath
-  });
-}
 
 const sequelize = new Sequelize(
   process.env.DB_DATABASE,

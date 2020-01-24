@@ -17,7 +17,8 @@
     },
     "env": {
       "APP_ENV": "test",
-    }
+    },
+    "envFile": "${workspaceFolder}/.env"
   }, {
     "type": "node",
     "request": "launch",
@@ -36,6 +37,7 @@
     },
     "env": {
       "APP_ENV": "test",
-    }
+    },
+    "envFile": "${workspaceFolder}/.env"
   }]
 }
