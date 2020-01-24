@@ -9,16 +9,18 @@ beforeAll(() => {
 
 describe('test for ChallengeController', () => {
   test('createChallenge', async () => {
+    const payload = {
+      routine_type: RoutineType.Daily,
+      object_unit: ObjectUnit.Time,
+      quota: 300,
+      exercise_type: ExerciseType.Running,
+    }
     const res = await supertest(app)
       .post('/challenges')
       .set('x-access-token', `${process.env.TEST_USER_TOKEN}`)
-      .send({
-        routine_type: RoutineType.Daily,
-        object_unit: ObjectUnit.Time,
-        quota: 300,
-        exercise_type: ExerciseType.Running,
-      });
+      .send(payload);
     expect(res.status).toEqual(200);
+    expect(res.status.data).toMatchObject(payload)
   })
   // test('getChallenges', async () => {
   //   const res = await supertest(app)

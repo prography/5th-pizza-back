@@ -1,19 +1,26 @@
 import supertest from 'supertest';
 import app from '../../app';
-import { RoutineType, ObjectUnit, ExerciseType } from '../../models/BaseChallenge';
+import { connectDatabase } from '../../models';
+
+beforeAll(() => {
+  connectDatabase()
+})
 
 describe('레코드 테스트', () => {
-  test('createChallenge', async () => {
+  test('createRecord', async () => {
+    const payload = {
+      user_id: Number(process.env.TEST_USER_ID),
+      challenge_id: Number(process.env.TEST_CHALLENGE_ID),
+      running_time: 30,
+      distance: 1000,
+      screenshot: 'sampleImage'
+    }
     const res = await supertest(app)
-      .post('/challenges')
+      .post('/records')
       .set('x-access-token', `${process.env.TEST_USER_TOKEN}`)
-      .send({
-        routine_type: RoutineType.Daily,
-        object_unit: ObjectUnit.Time,
-        quota: 300,
-        exercise_type: ExerciseType.Running,
-      });
+      .send(payload);
     expect(res.status).toEqual(200);
+    expect(res.body.data).toMatchObject(payload)
   })
   // test('', async () => {
   //   const res = await supertest(app)
