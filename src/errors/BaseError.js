@@ -1,4 +1,4 @@
-class BaseError extends Error {
+export class BaseError extends Error {
   constructor(message) {
     super();
     this.name = this.constructor.name;
@@ -7,5 +7,3 @@ class BaseError extends Error {
     this.message = message;
   }
 }
-
-export default { BaseError }

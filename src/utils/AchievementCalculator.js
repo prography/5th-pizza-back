@@ -1,7 +1,7 @@
-import models from '../models'
+import { Record } from '../models'
 
 const getAchievement = async function (challenge, user) {
-    const records = await models.Records.findAll({ where: { user_id: user.id, challenge_id: challenge.id } })
+    const records = await Record.findAll({ where: { user_id: user.id, challenge_id: challenge.id } })
     let total = 0;
     let goal = (await challenge.getBaseChallenge()).quota;
     if (challenge.object_unit === 'time') {
@@ -12,6 +12,6 @@ const getAchievement = async function (challenge, user) {
     return Math.min(Math.round(total / goal * 100), 100)
 }
 
-export default { 
+export { 
     getAchievement 
 }

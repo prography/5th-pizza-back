@@ -1,6 +1,6 @@
-const { BaseJob } = require('./BaseJob');
-const models = require("../models");
-const { Op } = require('sequelize');
+import { BaseChallenge, User, Record, Badge } from '../models';
+import { BaseJob } from './BaseJob';
+import { Op } from 'sequelize';
 
 export class CreateBadgeJob extends BaseJob {
   constructor(userId) {
@@ -13,15 +13,14 @@ export class CreateBadgeJob extends BaseJob {
   }
 
   async beforeProcess() {
-    this.user = await models.Users.findOne({ where: { id: this.userId } });
-    const Records = models.Records;
-    this.allRecords = await Records.findAll({where: {user_id: this.userId}})
-    this.cycleRecords = await Records.findAll({ 
+    this.user = await User.findOne({ where: { id: this.userId } });
+    this.allRecords = await Record.findAll({where: {user_id: this.userId}})
+    this.cycleRecords = await Record.findAll({ 
       where: {[Op.and]: 
         [{user_id: this.userId}, 
         {challenge_id: {[Op.in]: (await this.getCycleChallengeId()).map((data) => data.id)}}]
       }})
-    this.runningRecords = await Records.findAll({ 
+    this.runningRecords = await Record.findAll({ 
       where: { [Op.and]: 
         [{ user_id: this.userId }, 
         {challenge_id: { [Op.in]: (await this.getRunningChallengeId()).map((data) => data.id)}}]
@@ -51,7 +50,7 @@ export class CreateBadgeJob extends BaseJob {
         level: 5,
         UserId: this.userId
       }
-      payloads.push(models.Badges.create(badge));
+      payloads.push(Badge.create(badge));
     }
 
     if (cycleAccTime > 50000){
@@ -60,7 +59,7 @@ export class CreateBadgeJob extends BaseJob {
         level: 5,
         UserId: this.userId
       }
-      payloads.push(models.Badges.create(badge));
+      payloads.push(Badge.create(badge));
     }
     return Promise.all(payloads);
   }
@@ -75,7 +74,7 @@ export class CreateBadgeJob extends BaseJob {
         level: 3,
         UserId: this.userId
       }
-      payloads.push(models.Badges.create(badge));
+      payloads.push(Badge.create(badge));
     }
 
     if (runningAccTime > 50000){
@@ -84,7 +83,7 @@ export class CreateBadgeJob extends BaseJob {
         level: 5,
         UserId: this.userId
       }
-      payloads.push(models.Badges.create(badge));
+      payloads.push(Badge.create(badge));
     }
     return Promise.all(payloads)
   }
@@ -105,7 +104,7 @@ export class CreateBadgeJob extends BaseJob {
         level: Math.max(base, 1),
         UserId: this.userId
       }
-      payloads.push(models.Badges.create(badge));
+      payloads.push(Badge.create(badge));
       base += multiply;
     }
     return Promise.all(payloads)
@@ -124,12 +123,12 @@ export class CreateBadgeJob extends BaseJob {
   }
   
   getCycleChallengeId(){
-    const cycleChallengeId = models.BaseChallenges.findAll({where: { exercise_type: 'cycling' }, attributes: ['id']});
+    const cycleChallengeId = BaseChallenge.findAll({where: { exercise_type: 'cycling' }, attributes: ['id']});
     return cycleChallengeId
   }
 
   getRunningChallengeId(){
-    const runningChallengeId = models.BaseChallenges.findAll({where: { exercise_type: 'running' }, attributes: ['id']});
+    const runningChallengeId = BaseChallenge.findAll({where: { exercise_type: 'running' }, attributes: ['id']});
     return runningChallengeId
   }
 }

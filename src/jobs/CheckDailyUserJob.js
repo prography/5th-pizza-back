@@ -1,8 +1,7 @@
-const { BaseJob } = require('./BaseJob');
-const models = require("../models");
-const { Op } = require('sequelize');
-const { getAchievement } = require('../utils/AchievementCalculator');
-const moment = require('moment');
+import { BaseJob } from './BaseJob';
+import { Op } from 'sequelize';
+import { getAchievement } from '../utils/AchievementCalculator';
+import moment from 'moment';
 
 export class CheckDailyUserJob extends BaseJob {
   constructor(user) {

@@ -1,6 +1,6 @@
-import BaseError from './BaseError';
+import { BaseError } from './BaseError';
 
-class BaseHttpError extends BaseError {
+export class BaseHttpError extends BaseError {
   constructor(message, httpCode = 500) {
     super(message);
     this.name = this.constructor.name;
@@ -9,8 +9,4 @@ class BaseHttpError extends BaseError {
     this.message = message;
     this.httpCode = httpCode;
   }
-}
-
-export default {
-  BaseHttpError
 }
