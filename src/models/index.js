@@ -18,6 +18,13 @@ function createConnection() {
       logging: false,
     }
   );
+  const models = [User, Badge, Challenge, BaseChallenge, Record];
+  models.forEach((model) => {
+    model.load(sequelize);
+  })
+  models.forEach((model) => {
+    model.link(sequelize);
+  })
 }
 
 function getConnection() {
@@ -28,13 +35,7 @@ function sync() {
   if (!sequelize) {
     createConnection();
   }
-  const models = [User, Badge, Challenge, BaseChallenge, Record];
-  models.forEach((model) => {
-    model.load(sequelize);
-  })
-  models.forEach((model) => {
-    model.link(sequelize);
-  })
+  sequelize.sync();
 }
 
 export {
