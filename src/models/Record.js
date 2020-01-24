@@ -1,19 +1,18 @@
-'use strict';
-module.exports = (sequelize, DataTypes) => {
-  const record = sequelize.define('Records', {
-    user_id: DataTypes.INTEGER,
-    challenge_id: DataTypes.INTEGER,
-    running_time: DataTypes.DOUBLE,
-    distance: DataTypes.DOUBLE,
-    created_at: DataTypes.DATE,
-    screenshot: DataTypes.STRING
-  }, 
-  {
-    timestamps: false
-  });
-  
-  record.associate = function(models) {
+import Sequelize from 'sequelize';
+import { BaseModel, defaultSetting } from './BaseModel';
 
-  };
-  return record;
-};
+export class Record extends BaseModel {
+  static load(sequelize) {
+    super.init({
+      userId: Sequelize.INTEGER,
+      challengeId: Sequelize.INTEGER,
+      runningTime: Sequelize.DOUBLE,
+      distance: Sequelize.DOUBLE,
+      screenshot: Sequelize.STRING
+    }, {
+      ...defaultSetting,
+      sequelize,
+      modelName: 'record'
+    })
+  }
+}

@@ -1,28 +1,52 @@
-'use strict'
+import Sequelize from 'sequelize';
+import { BaseModel, defaultSetting } from './BaseModel';
+import { User } from './User';
 
-module.exports = (sequelize, DataTypes) => {
-    const badge = sequelize.define('Badges', {
-        type: {
-            type: DataTypes.ENUM([
-                'Continous_recording',
-                'Cycle_Accumulative_distance',
-                'Cycle_Accumulative_time',
-                'Running_Accumulative_distance',
-                'Running_Accumulative_time',
-                'Success_Challenge'
-            ]),
-            unique: true,
+export const BadgeType = {
+    ContinuousRecording: 'Continuous_recording',
+    CycleAccumulativeDistance: 'Cycle_Accumulative_distance',
+    CycleAccumulativeTime: 'Cycle_Accumulative_time',
+    RunningAccumulativeDistance: 'Running_Accumulative_distance',
+    RunningAccumulativeTime: 'Running_Accumulative_time',
+    SuccessChallenge: 'Success_Challenge'
+}
+
+const uniqueName = 'badgeUnique'
+
+export class Badge extends BaseModel {
+  static load(sequelize) {
+    // reference 거는 부분이 있으면 User 모델이 생성 된 후에 적용해야한다.
+    Badge.init({
+      userId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: User,
+          key: 'id',
         },
-        level: {
-            type: DataTypes.INTEGER,
-            unique: true,
-        }
+        unique: uniqueName
+      },
+      type: {
+        type: Sequelize.ENUM([
+          BadgeType.ContinuousRecording,
+          BadgeType.CycleAccumulativeDistance,
+          BadgeType.CycleAccumulativeTime,
+          BadgeType.RunningAccumulativeDistance,
+          BadgeType.RunningAccumulativeTime,
+          BadgeType.SuccessChallenge
+        ]),
+        unique: uniqueName,
+      },
+      level: {
+        type: Sequelize.INTEGER,
+        unique: uniqueName,
+      }
     }, {
-        undersocred: true,
-    });
-    
-    badge.associate = function(models) {
-       badge.belongsTo(models.Users, {foreignKey: 'id', as: 'user_id', unique: true })
-    };
-    return badge;
-  };
+      ...defaultSetting,
+      sequelize,
+      modelName: 'badge',
+    })
+  }
+  static link(sequelize) {
+    Badge.belongsTo(User)
+  }
+}
