@@ -1,10 +1,10 @@
 import supertest from 'supertest';
 import app from '../../app';
 import { RoutineType, ObjectUnit, ExerciseType } from '../../models/BaseChallenge';
-import { createConnection, sync } from '../../models';
+import { connectDatabase } from '../../models';
 
 beforeAll(() => {
-  createConnection();
+  connectDatabase();
 })
 
 describe('test for ChallengeController', () => {

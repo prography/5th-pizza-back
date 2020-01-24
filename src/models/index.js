@@ -7,7 +7,7 @@ import { Record } from './Record';
 
 let sequelize = null;
 
-function createConnection() {
+function connectDatabase() {
   sequelize = new Sequelize(
     process.env.DB_DATABASE,
     process.env.DB_USERNAME,
@@ -33,7 +33,7 @@ function getConnection() {
 
 function sync() {
   if (!sequelize) {
-    createConnection();
+    connectDatabase();
   }
   sequelize.sync();
 }
@@ -44,7 +44,7 @@ export {
   BaseChallenge,
   Record,
   Challenge,
-  createConnection,
+  connectDatabase,
   sync,
   getConnection,
 }
@@ -55,7 +55,7 @@ export default {
   BaseChallenge,
   Record,
   Challenge,
-  createConnection,
+  connectDatabase,
   sync,
   getConnection
 }
