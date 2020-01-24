@@ -2,6 +2,7 @@ import { BaseJob } from './BaseJob';
 import { Op } from 'sequelize';
 import { getAchievement } from '../utils/AchievementCalculator';
 import moment from 'moment';
+import { Record } from '../models';
 
 export class CheckDailyUserJob extends BaseJob {
   constructor(user) {
@@ -23,26 +24,30 @@ export class CheckDailyUserJob extends BaseJob {
     throw e;
   }
 
-  async checkHasContinousRecord() {
+  async checkHasContinuousRecord() {
     const startDate = moment().subtract(1, 'd').format('YYYY-MM-DD 00:00:00');
     const endDate = moment().format('YYYY-MM-DD 00:00:00');
-    const records = await models.Records.count({ where: { user_id: this.user.id, created_at: {
+    const records = await Record.count({ where: { userId: this.user.id, createdAt: {
       [Op.and]: [
         {[Op.gte]: startDate},
         {[Op.lte]: endDate},
       ] } } })
     if (records) {
-      await this.user.update({ continous_record: this.user.continous_record + 1 });
+      await this.user.update({
+        continuousRecord: this.user.continuousRecord + 1
+      });
     } else {
-      await this.user.update({ continous_record: 0 })
+      await this.user.update({
+        continuousRecord: 0
+      })
     }
   }
 
   async checkIsChallengeSuccess() {
     const challenges = await this.user.getChallenges({ where: { success: false } });
     for (const challenge of challenges) {
-      const achivement = await getAchievement(challenge, this.user)
-      if (achivement >= 100) {
+      const achievement = await getAchievement(challenge, this.user)
+      if (achievement >= 100) {
         await challenge.update({ success: true });
       }
     }

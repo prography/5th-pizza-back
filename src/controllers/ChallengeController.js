@@ -2,25 +2,31 @@ import { BaseChallenge, Challenge, Record } from '../models';
 import moment from 'moment';
 import { Op } from 'sequelize';
 import { getAchievement } from '../utils/AchievementCalculator';
+import { transformRecords } from './RecordController';
 
 const getChallenges = async function(req ,res){
     const user = req.user
     const challenges = await user.getChallenges({ order: [[ {model: 'Challenges'}, 'created_at', 'DESC']] })
+    const challengesWithMeta = await Promise.all(challenges.map(async (challenge) => ({
+        ...challenge.toJSON(),
+        achievement: await getAchievement(challenge, user),
+        challengersNumber: (await (await challenge.getBaseChallenge()).getChallenges()).length
+    })))
     const result = { 
-        data: await Promise.all(challenges.map(async (challenge) => ({ 
-            ...challenge.toJSON(),
-            achievement: await getAchievement(challenge, user),
-            challengersNumber: (await (await challenge.getBaseChallenge()).getChallenges()).length 
-        })))
+        data: transformChallenges(challengesWithMeta)
     }
     res.send(result)
 }
 
 const getChallenge = async function(req, res){
     const id = req.params.challengeId;
-    const challenge = await BaseChallenge.findOne({ where: { id: id } });
+    const challenge = await Challenge.findOne({ where: { id: id } });
     if (challenge) {
-        res.send({ data: challenge });
+        const challengeWithMeta = {
+            achievement: await getAchievement(challenge, req.user),
+            challengersNumber: (await (await challenge.getBaseChallenge()).getChallenges()).length
+        }
+        res.send({ data: transformChallenge(challengeWithMeta) });
     }
     else {
         throw new Error('challenge does not exist')
@@ -34,7 +40,9 @@ const getChallengeRecords = async function(req, res){
         where: { user_id: user.id, challenge_id: challengeId },
         order: [['created_at', 'DESC']]
     }) 
-    res.send({ data: records })
+    res.send({
+        data: transformRecords(records)
+    })
 }
 
 const findOrNewBaseChallenge = async (challengeBody) => {
@@ -96,7 +104,7 @@ const createChallenge = async function(req, res){
     await challenge.setBaseChallenge(baseChallenge);
 
     res.send({
-        data: [challenge],
+        data: [transformChallenge(challenge)],
     })
 }
 
@@ -110,6 +118,21 @@ const deleteChallenge = async function(req, res){
         throw new Error('Cannot delete challenge')
     }
 }
+
+const transformChallenge = (challenge) => ({
+    id: challenge.id,
+    user_id: challenge.userId,
+    base_challenge_id: challenge.baseChallengeId,
+    start: challenge.start,
+    end: challenge.end,
+    success: challenge.success,
+    achievement: challenge.achievement,
+    challengersNumber: challenge.challengersNumber,
+    created_at: challenge.createdAt,
+    updated_at: challenge.updatedAt,
+});
+
+const transformChallenges = (challenges) => challenges.map(transformChallenge);
 
 export default {
     getChallenges,

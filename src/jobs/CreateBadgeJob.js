@@ -17,13 +17,13 @@ export class CreateBadgeJob extends BaseJob {
     this.allRecords = await Record.findAll({where: {user_id: this.userId}})
     this.cycleRecords = await Record.findAll({ 
       where: {[Op.and]: 
-        [{user_id: this.userId}, 
-        {challenge_id: {[Op.in]: (await this.getCycleChallengeId()).map((data) => data.id)}}]
+        [{userId: this.userId}, 
+        {challengeId: {[Op.in]: (await this.getCycleChallengeId()).map((data) => data.id)}}]
       }})
     this.runningRecords = await Record.findAll({ 
       where: { [Op.and]: 
-        [{ user_id: this.userId }, 
-        {challenge_id: { [Op.in]: (await this.getRunningChallengeId()).map((data) => data.id)}}]
+        [{ userId: this.userId }, 
+        {challengeId: { [Op.in]: (await this.getRunningChallengeId()).map((data) => data.id)}}]
       }})
   }
 
@@ -102,7 +102,7 @@ export class CreateBadgeJob extends BaseJob {
       const badge = {
         type: 'Success_Challenge',
         level: Math.max(base, 1),
-        UserId: this.userId
+        userId: this.userId
       }
       payloads.push(Badge.create(badge));
       base += multiply;

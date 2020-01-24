@@ -20,7 +20,7 @@ const getFakeUserInfo = (type) => {
             case UserType.Google:
                 return {
                     email: fakeEmail,
-                    nickname: fakeNickname,
+                    name: fakeNickname,
                 }
             default:
                 return {
@@ -99,17 +99,17 @@ const setUserPayload = async function(type, userInfo){
         created_at: moment()
     }
     if (type === 'kakao'){
-        userPayload.user_id = userInfo.id
+        userPayload.userId = userInfo.id
         userPayload.email = userInfo.kakao_account.email
         userPayload.nickname = userInfo.properties.nickname
         }
     else if (type === 'google'){
-        userPayload.user_id = ''
+        userPayload.userId = ''
         userPayload.email = userInfo.email
         userPayload.nickname = userInfo.name
     }
     else {
-        userPayload.user_id = userInfo.id
+        userPayload.userId = userInfo.id
         userPayload.email = userInfo.email
         userPayload.nickname = userInfo.name
     }

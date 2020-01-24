@@ -1,11 +1,11 @@
 import { Record } from '../models'
 
 const getAchievement = async function (challenge, user) {
-    const records = await Record.findAll({ where: { user_id: user.id, challenge_id: challenge.id } })
+    const records = await Record.findAll({ where: { userId: user.id, challengeId: challenge.id } })
     let total = 0;
     let goal = (await challenge.getBaseChallenge()).quota;
-    if (challenge.object_unit === 'time') {
-        total = records.reduce((acc, record) => acc + record.running_time, 0);
+    if (challenge.objectUnit === 'time') {
+        total = records.reduce((acc, record) => acc + record.runningTime, 0);
     } else {
         total = records.reduce((acc, record) => acc + record.distance, 0)
     }

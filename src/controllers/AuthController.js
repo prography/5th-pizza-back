@@ -12,7 +12,7 @@ const login = async function(req, res){
             user = await User.findOne({ where: { email: userInfo.email, type: type }})
         }
         else {
-            user = await User.findOne({ where: { user_id: userInfo.id, type: type }})
+            user = await User.findOne({ where: { userId: userInfo.id, type: type }})
         }
 
         if (!user) {
