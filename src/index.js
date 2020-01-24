@@ -1,20 +1,14 @@
 import app from './app';
 import dotenv from 'dotenv';
-import path from 'path';
-import fs from 'fs';
+import { createConnection, sync } from './models';
 
-const envPath = path.join(__dirname, '..', '.env');
-if (fs.existsSync(envPath)) {
-  dotenv.config({
-    path: envPath
-  });
-}
+dotenv.config();
 
 const port = process.env.PORT || 4000;
 const host = process.env.HOST || 'localhost';
-async function main() {
-  import { sequelize } from './models';
-  await sequelize.sync()
+function main() {
+  createConnection();
+  sync();
   app.listen(port, host, () => {
     console.log(`server is running on ${port}`)
   });
