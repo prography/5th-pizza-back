@@ -1,9 +1,11 @@
 import { CheckDailyUserJob } from '../../../jobs/CheckDailyUserJob';
 import models from '../../../models';
+import { connectDatabase } from '../../models';
 
 describe('test start!', () => {
 
   beforeAll(() => {
+    connectDatabase()
     console.log('Hello! test');
   })
 
