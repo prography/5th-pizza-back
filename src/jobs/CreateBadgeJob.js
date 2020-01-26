@@ -92,6 +92,7 @@ export class CreateBadgeJob extends BaseJob {
   
   async createSuccessChallengeBadgeByUser() {
     const successChallengesNumber = (await this.user.getChallenges({ where: { success: true }})).length;
+    const payloads = [];
     let base = 0;
     const multiply = 5;
     while (successChallengesNumber / Math.max(base, 1) >= 1) {
