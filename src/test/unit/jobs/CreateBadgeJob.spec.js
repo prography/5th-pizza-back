@@ -1,9 +1,10 @@
-const { CreateBadgeJob } = require('../../../jobs/CreateBadgeJob');
-const app = require('../../../app');
+import { CreateBadgeJob } from '../../../jobs/CreateBadgeJob';
+import { connectDatabase } from '../../../models';
 
 describe('test start!', () => {
 
   beforeAll(() => {
+    connectDatabase()
     console.log('Hello! test');
   })
 

@@ -1,8 +1,8 @@
-const { Router } = require('express');
-const BadgeController = require('../controllers/BadgeController');
+import { Router } from 'express';
+import BadgeController from '../controllers/BadgeController';
 
 const router = Router();
 
 router.get('', BadgeController.getBadges)
 
-module.exports = router;
+export default router;

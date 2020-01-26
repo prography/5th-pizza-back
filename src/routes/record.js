@@ -1,5 +1,5 @@
-const { Router } = require('express');
-const RecordController = require('../controllers/RecordController')
+import { Router } from 'express';
+import RecordController from '../controllers/RecordController';
 
 const router = Router();
 
@@ -8,4 +8,4 @@ router.get('/:recordId', RecordController.getRecord);
 router.post('', RecordController.createRecord);
 router.delete('/:recordId', RecordController.deleteRecord);
 
-module.exports = router;
+export default router;

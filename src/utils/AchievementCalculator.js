@@ -1,15 +1,17 @@
-const models = require('../models')
+import { Record } from '../models'
 
 const getAchievement = async function (challenge, user) {
-    const records = await models.Records.findAll({ where: { user_id: user.id, challenge_id: challenge.id } })
+    const records = await Record.findAll({ where: { userId: user.id, challengeId: challenge.id } })
     let total = 0;
-    let goal = challenge.quota;
-    if (challenge.object_unit === 'time') {
-        total = records.reduce((acc, record) => acc + record.running_time, 0);
+    let goal = (await challenge.getBaseChallenge()).quota;
+    if (challenge.objectUnit === 'time') {
+        total = records.reduce((acc, record) => acc + record.runningTime, 0);
     } else {
         total = records.reduce((acc, record) => acc + record.distance, 0)
     }
     return Math.min(Math.round(total / goal * 100), 100)
 }
 
-module.exports = { getAchievement }
+export { 
+    getAchievement 
+}

@@ -1,12 +1,22 @@
-const models = require('../models')
+import { Badge } from "../models";
 
 const getBadges = async(req, res) => {
     const user = req.user
-    const badges = await models.Badges.findAll({ where: { userId: user.id } });
-
-    res.send({ data: badges })
+    const badges = await Badge.findAll({ where: { userId: user.id } });
+    res.send({ 
+        data: transformBadges(badges)
+    })
 }
 
-module.exports = {
+const transformBadge = (badge) => ({
+    id: badge.id,
+    user_id: badge.userId,
+    type: badge.type,
+    level: badge.level
+})
+
+const transformBadges = (badges) => badges.map(transformBadge);
+
+export default {
     getBadges
 }

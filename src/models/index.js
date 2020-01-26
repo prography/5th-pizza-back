@@ -1,52 +1,62 @@
-'use strict';
-const dotenv = require('dotenv');
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
-const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const db = {};
+import Sequelize from 'sequelize';
+import { User } from './User';
+import { Badge } from './Badge';
+import { BaseChallenge } from './BaseChallenge';
+import { Challenge } from './Challenge';
+import { Record } from './Record';
 
-const envPath = path.join(__dirname, '..', '.env');
-if (fs.existsSync(envPath)) {
-  dotenv.config({ path: envPath });
+let sequelize = null;
+
+function connectDatabase() {
+  sequelize = new Sequelize(
+    process.env.DB_DATABASE,
+    process.env.DB_USERNAME,
+    process.env.DB_PASSWORD, {
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      dialect: 'mysql',
+      logging: false,
+    }
+  );
+  const models = [User, Badge, Challenge, BaseChallenge, Record];
+  models.forEach((model) => {
+    model.load(sequelize);
+  })
+  models.forEach((model) => {
+    model.link(sequelize);
+  })
 }
 
-let sequelize;
-sequelize = new Sequelize(
-  process.env.DB_DATABASE,
-  process.env.DB_USERNAME,
-  process.env.DB_PASSWORD,
-  {
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    dialect: 'mysql',
+function getConnection() {
+  return sequelize;
+}
+
+function sync() {
+  if (!sequelize) {
+    connectDatabase();
   }
-);
+  sequelize.sync();
+}
 
-fs.readdirSync(__dirname)
-  .filter(file => {
-    return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
-  })
-  .forEach(file => {
-    const model = sequelize['import'](path.join(__dirname, file));
-    db[model.name] = model;
-  });
+export {
+  User,
+  Badge,
+  BaseChallenge,
+  Record,
+  Challenge,
+  connectDatabase,
+  sync,
+  getConnection,
+}
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
+export default {
+  User,
+  Badge,
+  BaseChallenge,
+  Record,
+  Challenge,
+  connectDatabase,
+  sync,
+  getConnection
+}
 
-db.BaseChallenges = require('./BaseChallenge')(sequelize, Sequelize);
-db.Records = require('./Record')(sequelize, Sequelize);
-db.Users = require('./User')(sequelize, Sequelize);
-db.Badges = require('./Badge')(sequelize, Sequelize);
-db.Challenges = require('./Challenge')(sequelize, Sequelize);
-
-
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
-});
-
-module.exports = db;

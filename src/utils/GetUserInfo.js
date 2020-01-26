@@ -1,8 +1,41 @@
-const moment = require('moment');
-const axios = require('axios');
+import moment from 'moment';
+import axios from 'axios';
+import { UserType } from '../models/User';
+
+const getFakeUserInfo = (type) => {
+    const fakeNickname = 'pizzaNick'
+    const fakeEmail = 'sample@pizza.com'
+    const fakeUserId = 123
+    switch (type) {
+        case UserType.Kakao:
+            return {
+                id: fakeUserId,
+                    kakao_account: {
+                        email: fakeEmail,
+                    },
+                    properties: {
+                        nickname: fakeNickname,
+                    }
+            }
+            case UserType.Google:
+                return {
+                    email: fakeEmail,
+                    name: fakeNickname,
+                }
+            default:
+                return {
+                    id: fakeUserId,
+                    email: fakeEmail,
+                    name: fakeNickname
+                }
+    }
+}
 
 const getUserInfo = async function(type, access_token) {
-    let userInfo
+    if (process.env.APP_ENV === 'test') {
+        return getFakeUserInfo(type)
+    }
+    let userInfo = null;
     const requestUrl = {
         kakao: 'https://kapi.kakao.com/v2/user/me',
         google: `https://oauth2.googleapis.com/tokeninfo?id_token=${access_token}`,
@@ -66,24 +99,24 @@ const setUserPayload = async function(type, userInfo){
         created_at: moment()
     }
     if (type === 'kakao'){
-        userPayload.user_id = userInfo.id
+        userPayload.userId = userInfo.id
         userPayload.email = userInfo.kakao_account.email
         userPayload.nickname = userInfo.properties.nickname
         }
     else if (type === 'google'){
-        userPayload.user_id = ''
+        userPayload.userId = ''
         userPayload.email = userInfo.email
         userPayload.nickname = userInfo.name
     }
     else {
-        userPayload.user_id = userInfo.id
+        userPayload.userId = userInfo.id
         userPayload.email = userInfo.email
         userPayload.nickname = userInfo.name
     }
     return userPayload
 }
 
-module.exports = {
+export {
     getUserInfo,
     setUserPayload
 }

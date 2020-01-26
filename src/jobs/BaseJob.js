@@ -1,4 +1,4 @@
-class BaseJob {
+export class BaseJob {
   // job 실행 전
   async beforeProcess() {}
   // 실제 동작
@@ -19,5 +19,3 @@ class BaseJob {
     await this.afterProcess();
   }
 }
-
-module.exports = { BaseJob };

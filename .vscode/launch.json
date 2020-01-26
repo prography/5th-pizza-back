@@ -14,7 +14,11 @@
     "disableOptimisticBPs": true,
     "windows": {
       "program": "${workspaceFolder}/node_modules/jest/bin/jest",
-    }
+    },
+    "env": {
+      "APP_ENV": "test",
+    },
+    "envFile": "${workspaceFolder}/.env"
   }, {
     "type": "node",
     "request": "launch",
@@ -23,13 +27,17 @@
     "args": [
       "${fileDirname}/${fileBasenameNoExtension}",
       "--config",
-      "jest.config.js"
+      "jest.config.js",
     ],
     "console": "integratedTerminal",
     "internalConsoleOptions": "neverOpen",
     "disableOptimisticBPs": true,
     "windows": {
       "program": "${workspaceFolder}/node_modules/jest/bin/jest",
-    }
+    },
+    "env": {
+      "APP_ENV": "test",
+    },
+    "envFile": "${workspaceFolder}/.env"
   }]
 }
