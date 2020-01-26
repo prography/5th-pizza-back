@@ -53,7 +53,7 @@ export class CreateBadgeJob extends BaseJob {
     const cycleAccDistance = this.accumulateDistance(this.cycleRecords)
     const cycleAccTime = this.accumulateTime(this.cycleRecords)
     const payloads = [];
-    if (cycleAccDistance > 5000){
+    if (cycleAccDistance >= 5000){
       const badge = {
         type: this.BadgeType.CycleAccumulativeDistance,
         level: 5
@@ -61,7 +61,7 @@ export class CreateBadgeJob extends BaseJob {
       payloads.push(this.user.createBadge(badge));
     }
 
-    if (cycleAccTime > 50000){
+    if (cycleAccTime >= 50000){
       const badge = {
         type: this.BadgeType.CycleAccumulativeTime,
         level: 5
