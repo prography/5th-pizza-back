@@ -70,13 +70,13 @@ const findOrNewBaseChallenge = async (challengeBody) => {
 
 const getEndDateByBaseChallengeType = (routineType) => {
     if(routineType === 'daily'){
-        return moment().add(7, 'd');
+        return moment().add(7, 'days');
     }
     else if(routineType === 'weekly'){
-        return moment().add(1, 'm');
+        return moment().add(1, 'months');
     }
     else{
-        return moment().add(3, 'm');
+        return moment().add(3, 'months');
     }
 } 
 
@@ -95,7 +95,7 @@ const createChallenge = async function(req, res){
 
     const payload = {
         start: moment(),
-        end: getEndDateByBaseChallengeType(baseChallenge.routine_type),
+        end: getEndDateByBaseChallengeType(baseChallenge.routineType),
         success: false
     }
 
