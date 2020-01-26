@@ -1,5 +1,5 @@
 import { CreateBadgeJob } from '../../../jobs/CreateBadgeJob';
-import { connectDatabase } from '../../models';
+import { connectDatabase } from '../../../models';
 
 describe('test start!', () => {
 

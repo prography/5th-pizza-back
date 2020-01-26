@@ -1,6 +1,5 @@
 import { CheckDailyUserJob } from '../../../jobs/CheckDailyUserJob';
-import models from '../../../models';
-import { connectDatabase } from '../../models';
+import { connectDatabase, User } from '../../../models';
 
 describe('test start!', () => {
 
@@ -10,7 +9,7 @@ describe('test start!', () => {
   })
 
   test('CheckDailyUserJob test', async () => {
-    const user = await models.Users.findOne({ where: { id: process.env.TEST_USER_ID }})
+    const user = await User.findOne({ where: { id: process.env.TEST_USER_ID }})
     const checkDailyUserJob = new CheckDailyUserJob(user);
     await checkDailyUserJob.run();
   })
