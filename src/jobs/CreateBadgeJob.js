@@ -10,6 +10,15 @@ export class CreateBadgeJob extends BaseJob {
     this.allRecords = []
     this.cycleRecords = []
     this.runningRecords = []
+
+    this.BadgeType = {
+      ContinuousRecording: 'Continuous_recording',
+      CycleAccumulativeDistance: 'Cycle_Accumulative_distance',
+      CycleAccumulativeTime: 'Cycle_Accumulative_time',
+      RunningAccumulativeDistance: 'Running_Accumulative_distance',
+      RunningAccumulativeTime: 'Running_Accumulative_time',
+      SuccessChallenge: 'Success_Challenge'
+    }
   }
 
   async beforeProcess() {
@@ -46,7 +55,7 @@ export class CreateBadgeJob extends BaseJob {
     const payloads = [];
     if (cycleAccDistance > 5000){
       const badge = {
-        type: 'Cycle_Accumulative_distance',
+        type: this.BadgeType.CycleAccumulativeDistance,
         level: 5
       }
       payloads.push(this.user.createBadge(badge));
@@ -54,7 +63,7 @@ export class CreateBadgeJob extends BaseJob {
 
     if (cycleAccTime > 50000){
       const badge = {
-        type: 'Cycle_Accumulative_time',
+        type: this.BadgeType.CycleAccumulativeTime,
         level: 5
       }
       payloads.push(this.user.createBadge(badge));
@@ -68,7 +77,7 @@ export class CreateBadgeJob extends BaseJob {
     const payloads = [];
     if (runningAccDistance >= 3000){
       const badge = {
-        type: 'Running_Accumulative_distance',
+        type: this.BadgeType.RunningAccumulativeDistance,
         level: 3
       }
       payloads.push(this.user.createBadge(badge));
@@ -76,7 +85,7 @@ export class CreateBadgeJob extends BaseJob {
 
     if (runningAccTime >= 50000){
       const badge = {
-        type: 'Running_Accumulative_time',
+        type: this.BadgeType.RunningAccumulativeTime,
         level: 5
       }
       payloads.push(this.user.createBadge(badge));
@@ -85,19 +94,29 @@ export class CreateBadgeJob extends BaseJob {
   }
   
   async createContinuousRecordBadgeByUser() {
-    // 오늘부터 과거 30일동안 확인
-    // 매일매일 유저의 모델에 연속 기록일 수를 세고 그것만으로 할까 했었는데, 조금 복잡할 것으로 보임
-    // 토요일에 내가 마저 하던가, 기록수가 많으면 배지를 주는 걸로 하는게 더 쉽지 않을까 해
+    const payloads = [];
+    const continuousRecord = await this.user.continuousRecord;
+    let base = 3;
+    const multiply = 3;
+    while (continuousRecord / base >= 1){
+      const badge = {
+        type: this.BadgeType.ContinuousRecording,
+        level: base,
+      }
+      payloads.push(this.user.createBadge(badge));
+      base += multiply;
+    }
+    return Promise.all(payloads);
   }
   
   async createSuccessChallengeBadgeByUser() {
-    const successChallengesNumber = (await this.user.getChallenges({ where: { success: true }})).length;
     const payloads = [];
+    const successChallengesNumber = (await this.user.getChallenges({ where: { success: true }})).length;
     let base = 0;
     const multiply = 5;
     while (successChallengesNumber / Math.max(base, 1) >= 1) {
       const badge = {
-        type: 'Success_Challenge',
+        type: this.BadgeType.SuccessChallenge,
         level: Math.max(base, 1)
       }
       payloads.push(this.user.createBadge(badge));
