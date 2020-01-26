@@ -9,11 +9,11 @@ export class CheckDailyUserJob extends BaseJob {
     super();
     this.user = user
   }
-    // job 실행 전
+  // job 실행 전
   async beforeProcess() {}
   // 실제 동작
   async process() {
-    await this.checkHasContinousRecord()
+    await this.checkHasContinuousRecord()
     await this.checkIsChallengeSuccess()
   }
   // job 실행 후
@@ -25,7 +25,7 @@ export class CheckDailyUserJob extends BaseJob {
   }
 
   async checkHasContinuousRecord() {
-    const startDate = moment().subtract(1, 'd').format('YYYY-MM-DD 00:00:00');
+    const startDate = moment().subtract(1, 'day').format('YYYY-MM-DD 00:00:00');
     const endDate = moment().format('YYYY-MM-DD 00:00:00');
     const records = await Record.count({ where: { userId: this.user.id, createdAt: {
       [Op.and]: [

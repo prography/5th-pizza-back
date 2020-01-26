@@ -47,19 +47,17 @@ export class CreateBadgeJob extends BaseJob {
     if (cycleAccDistance > 5000){
       const badge = {
         type: 'Cycle_Accumulative_distance',
-        level: 5,
-        UserId: this.userId
+        level: 5
       }
-      payloads.push(Badge.create(badge));
+      payloads.push(this.user.createBadge(badge));
     }
 
     if (cycleAccTime > 50000){
       const badge = {
         type: 'Cycle_Accumulative_time',
-        level: 5,
-        UserId: this.userId
+        level: 5
       }
-      payloads.push(Badge.create(badge));
+      payloads.push(this.user.createBadge(badge));
     }
     return Promise.all(payloads);
   }
@@ -68,22 +66,20 @@ export class CreateBadgeJob extends BaseJob {
     const runningAccDistance = this.accumulateDistance(this.runningRecords)
     const runningAccTime = this.accumulateTime(this.runningRecords)
     const payloads = [];
-    if (runningAccDistance > 3000){
+    if (runningAccDistance >= 3000){
       const badge = {
         type: 'Running_Accumulative_distance',
-        level: 3,
-        UserId: this.userId
+        level: 3
       }
-      payloads.push(Badge.create(badge));
+      payloads.push(this.user.createBadge(badge));
     }
 
-    if (runningAccTime > 50000){
+    if (runningAccTime >= 50000){
       const badge = {
         type: 'Running_Accumulative_time',
-        level: 5,
-        UserId: this.userId
+        level: 5
       }
-      payloads.push(Badge.create(badge));
+      payloads.push(this.user.createBadge(badge));
     }
     return Promise.all(payloads)
   }
@@ -95,16 +91,15 @@ export class CreateBadgeJob extends BaseJob {
   }
   
   async createSuccessChallengeBadgeByUser() {
-    const successChallengesNumber = (await this.user.getChallenges({where: { success: true}})).length;
+    const successChallengesNumber = (await this.user.getChallenges({ where: { success: true }})).length;
     let base = 0;
     const multiply = 5;
-    while (successChallengesNumber / Math.max(base, 1) > 1) {
+    while (successChallengesNumber / Math.max(base, 1) >= 1) {
       const badge = {
         type: 'Success_Challenge',
-        level: Math.max(base, 1),
-        userId: this.userId
+        level: Math.max(base, 1)
       }
-      payloads.push(Badge.create(badge));
+      payloads.push(this.user.createBadge(badge));
       base += multiply;
     }
     return Promise.all(payloads)
