@@ -1,4 +1,4 @@
-import { BaseChallenge, User, Record, Badge } from '../models';
+import { BaseChallenge, User, Record } from '../models';
 import { BaseJob } from './BaseJob';
 import { Op } from 'sequelize';
 
