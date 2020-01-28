@@ -8,6 +8,7 @@ node_modules/
 .env
 
 Dockerrun.aws.json
+docker-compose.yml
 
 src/config
 db/

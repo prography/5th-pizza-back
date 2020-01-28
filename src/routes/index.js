@@ -18,6 +18,6 @@ router.use(authUtil.verifyToken);
 router.use('/challenges', challenge);
 router.use('/records', record);
 router.use('/user', user);
-router.use('/badge', badge);
+router.use('/badges', badge);
 
 export default router;
