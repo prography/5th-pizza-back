@@ -7,11 +7,15 @@ import { transformRecords } from './RecordController';
 const getChallenges = async function(req ,res){
     const user = req.user
     const challenges = await user.getChallenges({ order: [[ {model: 'Challenges'}, 'created_at', 'DESC']] })
-    const challengesWithMeta = await Promise.all(challenges.map(async (challenge) => ({
-        ...challenge.toJSON(),
-        achievement: await getAchievement(challenge, user),
-        challengersNumber: (await (await challenge.getBaseChallenge()).getChallenges()).length
-    })))
+    const challengesWithMeta = await Promise.all(challenges.map(async (challenge) => {
+        const baseChallenge = await challenge.getBaseChallenge();
+        return {
+            ...challenge.toJSON(),
+            baseChallenge,
+            achievement: await getAchievement(challenge, user),
+            challengersNumber: (await baseChallenge.getChallenges()).length,
+        }
+    }))
     const result = { 
         data: transformChallenges(challengesWithMeta)
     }
@@ -22,9 +26,11 @@ const getChallenge = async function(req, res){
     const id = req.params.challengeId;
     const challenge = await Challenge.findOne({ where: { id: id } });
     if (challenge) {
+        const baseChallenge = await challenge.getBaseChallenge();
         const challengeWithMeta = {
+            baseChallenge,
             achievement: await getAchievement(challenge, req.user),
-            challengersNumber: (await (await challenge.getBaseChallenge()).getChallenges()).length
+            challengersNumber: (await baseChallenge.getChallenges()).length,
         }
         res.send({ data: transformChallenge(challengeWithMeta) });
     }
@@ -99,12 +105,12 @@ const createChallenge = async function(req, res){
         success: false
     }
 
-    const challenge = await Challenge.create(payload)
+    let challenge = await Challenge.create(payload)
     await challenge.setUser(user);
     await challenge.setBaseChallenge(baseChallenge);
-
+    challenge = await Challenge.findOne({ where: { id: challenge.id }, include: ['baseChallenge'] });
     res.send({
-        data: [transformChallenge(challenge)],
+        data: transformChallenge(challenge),
     })
 }
 
@@ -130,6 +136,12 @@ const transformChallenge = (challenge) => ({
     challengersNumber: challenge.challengersNumber,
     created_at: challenge.createdAt,
     updated_at: challenge.updatedAt,
+    base_challenge: {
+        routine_type: challenge.baseChallenge.routineType,
+        object_unit: challenge.baseChallenge.objectUnit,
+        exercise_type: challenge.baseChallenge.exerciseType,
+        quota: challenge.baseChallenge.quota,
+    }
 });
 
 const transformChallenges = (challenges) => challenges.map(transformChallenge);
