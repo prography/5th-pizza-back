@@ -5,6 +5,7 @@ import record from './record';
 import user from './user';
 import auth from './auth';
 import badge from './badge';
+import job from './job';
 
 const router = Router();        
 
@@ -13,6 +14,7 @@ router.get('/policy', function(req, res){
 })
 
 router.use('/auth', auth);
+router.use('/jobs', job);
 router.use(authUtil.verifyToken);
 
 router.use('/challenges', challenge);
