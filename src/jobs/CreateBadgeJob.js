@@ -1,37 +1,29 @@
-import { BaseChallenge, User, Record } from '../models';
+import { BaseChallenge, User, Record, Badge } from '../models';
+import { BadgeType } from '../models/Badge';
 import { BaseJob } from './BaseJob';
 import { Op } from 'sequelize';
+import { ExerciseType } from '../models/BaseChallenge';
 
 export class CreateBadgeJob extends BaseJob {
-  constructor(userId) {
+  constructor(user) {
     super();
-    this.userId = userId
-    this.user = null;
+    this.user = user;
     this.allRecords = []
     this.cycleRecords = []
     this.runningRecords = []
-
-    this.BadgeType = {
-      ContinuousRecording: 'Continuous_recording',
-      CycleAccumulativeDistance: 'Cycle_Accumulative_distance',
-      CycleAccumulativeTime: 'Cycle_Accumulative_time',
-      RunningAccumulativeDistance: 'Running_Accumulative_distance',
-      RunningAccumulativeTime: 'Running_Accumulative_time',
-      SuccessChallenge: 'Success_Challenge'
-    }
   }
 
   async beforeProcess() {
-    this.user = await User.findOne({ where: { id: this.userId } });
-    this.allRecords = await Record.findAll({where: {user_id: this.userId}})
+    this.user = await User.findOne({ where: { id: this.user.id } });
+    this.allRecords = await Record.findAll({where: { userId: this.user.id }})
     this.cycleRecords = await Record.findAll({ 
       where: {[Op.and]: 
-        [{userId: this.userId}, 
+        [{userId: this.user.id}, 
         {challengeId: {[Op.in]: (await this.getCycleChallengeId()).map((data) => data.id)}}]
       }})
     this.runningRecords = await Record.findAll({ 
       where: { [Op.and]: 
-        [{ userId: this.userId }, 
+        [{ userId: this.user.id }, 
         {challengeId: { [Op.in]: (await this.getRunningChallengeId()).map((data) => data.id)}}]
       }})
   }
@@ -40,7 +32,7 @@ export class CreateBadgeJob extends BaseJob {
     await this.createBadgeByUser()
   }
 
-  createBadgeByUser() {
+  async createBadgeByUser() {
     return Promise.all([
       this.createCycleBadgeByUser(),
       this.createRunningBadgeByUser(),
@@ -55,18 +47,18 @@ export class CreateBadgeJob extends BaseJob {
     const payloads = [];
     if (cycleAccDistance >= 5000){
       const badge = {
-        type: this.BadgeType.CycleAccumulativeDistance,
+        type: BadgeType.CycleAccumulativeDistance,
         level: 5
       }
-      payloads.push(this.user.createBadge(badge));
+      payloads.push(Badge.upsert({ ...badge, userId: this.user.id }));
     }
 
     if (cycleAccTime >= 50000){
       const badge = {
-        type: this.BadgeType.CycleAccumulativeTime,
+        type: BadgeType.CycleAccumulativeTime,
         level: 5
       }
-      payloads.push(this.user.createBadge(badge));
+      payloads.push(Badge.upsert({ ...badge, userId: this.user.id }));
     }
     return Promise.all(payloads);
   }
@@ -77,33 +69,33 @@ export class CreateBadgeJob extends BaseJob {
     const payloads = [];
     if (runningAccDistance >= 3000){
       const badge = {
-        type: this.BadgeType.RunningAccumulativeDistance,
+        type: BadgeType.RunningAccumulativeDistance,
         level: 3
       }
-      payloads.push(this.user.createBadge(badge));
+      payloads.push(Badge.upsert({ ...badge, userId: this.user.id }));
     }
 
     if (runningAccTime >= 50000){
       const badge = {
-        type: this.BadgeType.RunningAccumulativeTime,
+        type: BadgeType.RunningAccumulativeTime,
         level: 5
       }
-      payloads.push(this.user.createBadge(badge));
+      payloads.push(Badge.upsert({ ...badge, userId: this.user.id }));
     }
     return Promise.all(payloads)
   }
   
   async createContinuousRecordBadgeByUser() {
     const payloads = [];
-    const continuousRecord = await this.user.continuousRecord;
+    const continuousRecord = this.user.continuousRecord;
     let base = 3;
     const multiply = 3;
     while (continuousRecord / base >= 1){
       const badge = {
-        type: this.BadgeType.ContinuousRecording,
+        type: BadgeType.ContinuousRecording,
         level: base,
       }
-      payloads.push(this.user.createBadge(badge));
+      payloads.push(Badge.upsert({ ...badge, userId: this.user.id }));
       base += multiply;
     }
     return Promise.all(payloads);
@@ -116,10 +108,10 @@ export class CreateBadgeJob extends BaseJob {
     const multiply = 5;
     while (successChallengesNumber / Math.max(base, 1) >= 1) {
       const badge = {
-        type: this.BadgeType.SuccessChallenge,
+        type: BadgeType.SuccessChallenge,
         level: Math.max(base, 1)
       }
-      payloads.push(this.user.createBadge(badge));
+      payloads.push(Badge.upsert({ ...badge, userId: this.user.id }));
       base += multiply;
     }
     return Promise.all(payloads)
@@ -137,13 +129,13 @@ export class CreateBadgeJob extends BaseJob {
     return array.reduce((acc, item) => acc + item[field], defaultValue);
   }
   
-  getCycleChallengeId(){
-    const cycleChallengeId = BaseChallenge.findAll({where: { exercise_type: 'cycling' }, attributes: ['id']});
+  async getCycleChallengeId(){
+    const cycleChallengeId = await BaseChallenge.findAll({where: { exerciseType: ExerciseType.Cycling }, attributes: ['id']});
     return cycleChallengeId
   }
 
-  getRunningChallengeId(){
-    const runningChallengeId = BaseChallenge.findAll({where: { exercise_type: 'running' }, attributes: ['id']});
+  async getRunningChallengeId(){
+    const runningChallengeId = await BaseChallenge.findAll({where: { exerciseType: ExerciseType.Running }, attributes: ['id']});
     return runningChallengeId
   }
 }

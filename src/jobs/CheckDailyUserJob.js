@@ -25,13 +25,13 @@ export class CheckDailyUserJob extends BaseJob {
   }
 
   async checkHasContinuousRecord() {
-    const startDate = moment().subtract(1, 'day').format('YYYY-MM-DD 00:00:00');
-    const endDate = moment().format('YYYY-MM-DD 00:00:00');
-    const records = await Record.count({ where: { userId: this.user.id, createdAt: {
-      [Op.and]: [
-        {[Op.gte]: startDate},
-        {[Op.lte]: endDate},
-      ] } } })
+    const startDate = moment().local().subtract(1, 'd').format('YYYY-MM-DD');
+    const endDate = moment().local().format('YYYY-MM-DD');
+    const createdAt = {
+      [Op.lt]: endDate,
+      [Op.gte]: startDate,
+    }
+    const records = await Record.count({ where: { userId: this.user.id, createdAt } })
     if (records) {
       await this.user.update({
         continuousRecord: this.user.continuousRecord + 1
