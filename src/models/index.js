@@ -16,6 +16,7 @@ function connectDatabase() {
       port: process.env.DB_PORT,
       dialect: 'mysql',
       logging: false,
+      timezone: '+09:00'
     }
   );
   const models = [User, Badge, Challenge, BaseChallenge, Record];
