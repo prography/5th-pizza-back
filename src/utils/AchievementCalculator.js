@@ -1,6 +1,6 @@
 import { Record } from '../models'
 
-const getAchievement = async function (challenge, user) {
+const getAchievement = async (challenge, user) => {
     const records = await Record.findAll({ where: { userId: user.id, challengeId: challenge.id } })
     const baseChallenge = await challenge.getBaseChallenge();
     let total = 0;
