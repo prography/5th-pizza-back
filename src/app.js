@@ -1,6 +1,7 @@
 import express from 'express';
 import routes from './routes';
 import bodyParser from 'body-parser';
+import { BaseHttpError } from './errors/BaseHttpError';
 
 const app = express();
 
@@ -14,7 +15,18 @@ app.use(bodyParser.json());
 app.use(routes);
 
 app.use((err, req, res, next) => {
-  res.status(500).send(err);
+  if (err instanceof BaseHttpError) {
+    res.status(err.httpCode).send({
+      error: {
+        name: err.name,
+        message: err.message
+      }
+    })
+  } else {
+    res.status(500).send({
+      error: err
+    });
+  }
 })
 
 export default app;
