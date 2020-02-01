@@ -3,6 +3,10 @@ import moment from 'moment';
 import { Op } from 'sequelize';
 import { getAchievement } from '../utils/AchievementCalculator';
 import { transformRecords } from './RecordController';
+import { DuplicateChallengeError } from '../errors/DuplicateChallengeError';
+import { NotFoundChallengeError } from '../errors/NotFoundChallengeError';
+import { Ranking } from '../utils/Ranking';
+import { QuotaError } from '../errors/QuotaError';
 
 const getChallenges = async function(req ,res){
     const user = req.user
@@ -22,20 +26,24 @@ const getChallenges = async function(req ,res){
     res.send(result)
 }
 
-const getChallenge = async function(req, res){
+const getChallenge = async function(req, res, next){
+    const user = req.user;
     const id = req.params.challengeId;
     const challenge = await Challenge.findOne({ where: { id: id } });
     if (challenge) {
+        const ranks = await Ranking(challenge);
         const baseChallenge = await challenge.getBaseChallenge();
         const challengeWithMeta = {
             baseChallenge,
+            ranks,
             achievement: await getAchievement(challenge, req.user),
             challengersNumber: (await baseChallenge.getChallenges()).length,
         }
         res.send({ data: transformChallenge(challengeWithMeta) });
     }
     else {
-        throw new Error('challenge does not exist')
+        next(new NotFoundChallengeError('존재하지 않는 challenge'));
+        return;
     }
 }
 
@@ -86,18 +94,24 @@ const getEndDateByBaseChallengeType = (routineType) => {
     }
 } 
 
-const createChallenge = async function(req, res){
+const createChallenge = async function(req, res, next){
     const user = req.user
     const body = req.body
 
     // validation
     if (!body.quota) {
-        res.send({ data: [{ error: 'quota value error' }] });
+        next(new QuotaError('Quata 정보 없음'));
         return;
     }
 
     // baseChallenge 확인
     const baseChallenge = await findOrNewBaseChallenge(body);
+
+    //끝나기 전인 동일한 challenge 확인
+    if(hasSameChallenge(user, baseChallenge)){
+        next(new DuplicateChallengeError());
+        return;
+    }
 
     const payload = {
         start: moment(),
@@ -121,7 +135,8 @@ const deleteChallenge = async function(req, res){
         res.send({ data: result })
     }
     else {
-        throw new Error('Cannot delete challenge')
+        next(new NotFoundChallengeError('존재하지 않는 challenge'));
+        return;
     }
 }
 
@@ -141,10 +156,20 @@ const transformChallenge = (challenge) => ({
         object_unit: challenge.baseChallenge.objectUnit,
         exercise_type: challenge.baseChallenge.exerciseType,
         quota: challenge.baseChallenge.quota,
-    }
+    },
+    ranks: challenge.ranks ? challenge.ranks : undefined,
 });
 
 const transformChallenges = (challenges) => challenges.map(transformChallenge);
+
+const hasSameChallenge = async (user, baseChallenge) => {
+    const end = {[Op.gte]: moment().format('YYYY-MM-DD 00:00:00')};
+    const challenge = await user.getChallenges({
+        where: {baseChallengeId: baseChallenge.id, end},
+        logging: console.log
+    });
+    return challenge;
+}
 
 export default {
     getChallenges,
