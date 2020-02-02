@@ -108,7 +108,7 @@ const createChallenge = async function(req, res, next){
     const baseChallenge = await findOrNewBaseChallenge(body);
 
     //끝나기 전인 동일한 challenge 확인
-    if(hasSameChallenge(user, baseChallenge)){
+    if(await hasSameChallenge(user, baseChallenge)){
         next(new DuplicateChallengeError());
         return;
     }
@@ -168,7 +168,7 @@ const hasSameChallenge = async (user, baseChallenge) => {
         where: {baseChallengeId: baseChallenge.id, end},
         logging: console.log
     });
-    return challenge;
+    return challenge.length;
 }
 
 export default {
