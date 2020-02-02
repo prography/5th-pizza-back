@@ -5,7 +5,7 @@ import { getAchievement } from '../utils/AchievementCalculator';
 import { transformRecords } from './RecordController';
 import { DuplicateChallengeError } from '../errors/DuplicateChallengeError';
 import { NotFoundChallengeError } from '../errors/NotFoundChallengeError';
-import { Ranking } from '../utils/Ranking';
+import { Ranking } from './RankingController';
 import { QuotaError } from '../errors/QuotaError';
 
 const getChallenges = async function(req ,res){
@@ -24,27 +24,6 @@ const getChallenges = async function(req ,res){
         data: transformChallenges(challengesWithMeta)
     }
     res.send(result)
-}
-
-const getChallenge = async function(req, res, next){
-    const user = req.user;
-    const id = req.params.challengeId;
-    const challenge = await Challenge.findOne({ where: { id: id } });
-    if (challenge) {
-        const ranks = await Ranking(challenge);
-        const baseChallenge = await challenge.getBaseChallenge();
-        const challengeWithMeta = {
-            baseChallenge,
-            ranks,
-            achievement: await getAchievement(challenge, req.user),
-            challengersNumber: (await baseChallenge.getChallenges()).length,
-        }
-        res.send({ data: transformChallenge(challengeWithMeta) });
-    }
-    else {
-        next(new NotFoundChallengeError('존재하지 않는 challenge'));
-        return;
-    }
 }
 
 const getChallengeRecords = async function(req, res){
@@ -156,8 +135,7 @@ const transformChallenge = (challenge) => ({
         object_unit: challenge.baseChallenge.objectUnit,
         exercise_type: challenge.baseChallenge.exerciseType,
         quota: challenge.baseChallenge.quota,
-    },
-    ranks: challenge.ranks ? challenge.ranks : undefined,
+    }
 });
 
 const transformChallenges = (challenges) => challenges.map(transformChallenge);
@@ -173,7 +151,6 @@ const hasSameChallenge = async (user, baseChallenge) => {
 
 export default {
     getChallenges,
-    getChallenge,
     getChallengeRecords,
     createChallenge,
     deleteChallenge

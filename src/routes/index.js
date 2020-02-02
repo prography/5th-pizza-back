@@ -6,6 +6,7 @@ import user from './user';
 import auth from './auth';
 import badge from './badge';
 import job from './job';
+import rank from './rank';
 
 const router = Router();        
 
@@ -21,5 +22,6 @@ router.use('/challenges', challenge);
 router.use('/records', record);
 router.use('/user', user);
 router.use('/badges', badge);
+router.use('/rank', rank);
 
 export default router;
